@@ -8,32 +8,46 @@ public class Main {
     private boolean help;
 
     @Parameter(
-            names={"--pass", "--pwd"}, required=true,
-            description="password to hash"
+        names={"--pass"}, required=true,
+        description="password to hash"
     )
     String pass;
 
     @Parameter(
-            names={"--salt"}, required=true,
-            description="salt to hash with password"
+        names={"--salt"}, required=true,
+        description="salt to hash with password"
     )
     String salt;
 
     @Parameter(
-            names={"--klen"}, required=true,
-            description="length of the produced hash"
+        names={"--klen"}, required=true,
+        description="length of the produced hash"
     )
     Integer klen;
 
     @Parameter(
-            names={"--NCOLS"}, description="number of columns"
+        names={"--tcost"}, required=true,
+        description="time cost"
     )
-    Long NCOLS = 256L;
+    Integer tcost;
 
     @Parameter(
-            names={"--BLOCK_LEN_INT64"}, description="block length in INT64"
+        names={"--mcost"}, required=true,
+        description="memory cost (number of rows)"
     )
-    Long BLOCK_LEN_INT64 = 12L;
+    Integer mcost;
+
+    @Parameter(
+        names={"--NCOLS"},
+        description="number of columns"
+    )
+    Integer NCOLS = 256;
+
+    @Parameter(
+        names={"--BLOCK_LEN_INT64"},
+        description="block length in INT64"
+    )
+    Integer BLOCK_LEN_INT64 = 12;
 
     public static void main(String[] argv) {
         Main main = new Main();
@@ -54,5 +68,23 @@ public class Main {
         System.out.println("Compile time parameters: ");
         System.out.println("          NCOLS: " + main.NCOLS);
         System.out.println("BLOCK_LEN_INT64: " + main.BLOCK_LEN_INT64);
+
+        byte[] hash = new byte[main.klen];
+        byte[] pass = main.pass.getBytes();
+        byte[] salt = main.salt.getBytes();
+
+        System.out.println("Going to print salt in bytes:");
+        for (int i = 0; i < salt.length; ++i) {
+            System.out.print(salt[i]);
+            System.out.print(' ');
+        } System.out.println();
+
+        Lyra2.phs(
+                hash, hash.length,
+                pass, pass.length,
+                salt, salt.length,
+                main.tcost, main.mcost,
+                main.NCOLS, main.BLOCK_LEN_INT64
+        );
     }
 }
