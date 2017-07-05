@@ -49,6 +49,25 @@ public class Main {
     )
     Integer BLOCK_LEN_INT64 = 12;
 
+    public static void dump_bytes(byte[] bytes, int n, int m) {
+        int div = n / m;
+        int mod = n % m;
+
+        for (int i = 0; i != div; ++i) {
+            for (int j = 0; j != m; ++j) {
+                System.out.printf("%02X ", bytes[i * m + j]);
+            } System.out.println();
+        }
+
+        for (int i = 0; i != mod; ++i) {
+            System.out.printf("%02X ", bytes[div * m + i]);
+        } System.out.println();
+    }
+
+    public static void dump_bytes(byte[] bytes, int n) {
+        Main.dump_bytes(bytes, n, 16);
+    }
+
     public static void main(String[] argv) {
         Main main = new Main();
         JCommander jc = JCommander.newBuilder().addObject(main).build();
@@ -73,11 +92,10 @@ public class Main {
         byte[] pass = main.pass.getBytes();
         byte[] salt = main.salt.getBytes();
 
-        System.out.println("Going to print salt in bytes:");
-        for (int i = 0; i < salt.length; ++i) {
-            System.out.print(salt[i]);
-            System.out.print(' ');
-        } System.out.println();
+        System.out.println("Going to print pass:");
+        Main.dump_bytes(pass, pass.length);
+        System.out.println("Going to print salt:");
+        Main.dump_bytes(salt, salt.length);
 
         Lyra2.phs(
                 hash, hash.length,
