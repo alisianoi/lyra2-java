@@ -78,24 +78,24 @@ public class Main {
             return;
         }
 
-        System.out.println("Commandline parameters: ");
-        System.out.println("Password: " + main.pass + " (" + main.pass.length() + ")");
-        System.out.println("Salt    : " + main.salt + " (" + main.salt.length() + ")");
-
-        System.out.println();
-
-        System.out.println("Compile time parameters: ");
-        System.out.println("          NCOLS: " + main.NCOLS);
-        System.out.println("BLOCK_LEN_INT64: " + main.BLOCK_LEN_INT64);
+//        System.out.println("Commandline parameters: ");
+//        System.out.println("Password: " + main.pass + " (" + main.pass.length() + ")");
+//        System.out.println("Salt    : " + main.salt + " (" + main.salt.length() + ")");
+//
+//        System.out.println();
+//
+//        System.out.println("Compile time parameters: ");
+//        System.out.println("          NCOLS: " + main.NCOLS);
+//        System.out.println("BLOCK_LEN_INT64: " + main.BLOCK_LEN_INT64);
 
         byte[] hash = new byte[main.klen];
         byte[] pass = main.pass.getBytes();
         byte[] salt = main.salt.getBytes();
 
-        System.out.println("Going to print pass:");
-        Main.dump_bytes(pass, pass.length);
-        System.out.println("Going to print salt:");
-        Main.dump_bytes(salt, salt.length);
+//        System.out.println("Going to print pass:");
+//        Main.dump_bytes(pass, pass.length);
+//        System.out.println("Going to print salt:");
+//        Main.dump_bytes(salt, salt.length);
 
         Lyra2.phs(
                 hash, hash.length,
