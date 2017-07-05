@@ -1,7 +1,5 @@
 package at.ac.tuwien.lyra2;
 
-import static java.lang.Math.toIntExact;
-
 public class Lyra2 {
     private final static int SIZEOF_INT = 4;
     // Taken from Sponge.h
@@ -47,7 +45,7 @@ public class Lyra2 {
 
         int i = m_cost * ROW_LEN_BYTES;
 
-        System.out.println("Will allocate " + i + " bytes for whole matrix");
+//        System.out.println("Will allocate " + i + " bytes for whole matrix");
 
         // i == m_cost (3) * BLOCK_LEN_INT64 (12) * N_COLS (256) * 8
         // C allocation is in bytes, so divide
@@ -65,19 +63,19 @@ public class Lyra2 {
         // See comment about constant 6 in original code
         int nBlocksInput = (saltlen + srclen + 6 * SIZEOF_INT) / BLOCK_LEN_BLAKE2_SAFE_BYTES + 1;
 
-        System.out.println("nBlocksInput: " + nBlocksInput);
-
-        System.out.println("Going to print salt once more:");
-        for (int s = 0; s < salt.length; ++s) {
-            System.out.print(salt[s]);
-            System.out.print(" ");
-        } System.out.println();
-
-        System.out.println("Allocating that many bytes:");
-        System.out.println(nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES);
-
-        System.out.println("srclen " + srclen);
-        System.out.println("saltlen " + saltlen);
+//        System.out.println("nBlocksInput: " + nBlocksInput);
+//
+//        System.out.println("Going to print salt once more:");
+//        for (int s = 0; s < salt.length; ++s) {
+//            System.out.print(salt[s]);
+//            System.out.print(" ");
+//        } System.out.println();
+//
+//        System.out.println("Allocating that many bytes:");
+//        System.out.println(nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES);
+//
+//        System.out.println("srclen " + srclen);
+//        System.out.println("saltlen " + saltlen);
 
         int ii;
         for (ii = 0; ii < nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES; ++ii) {
@@ -108,12 +106,15 @@ public class Lyra2 {
 
         whole_matrix[ii] = (byte) 0x80;
 
-         whole_matrix[nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES - 1] ^= (byte) 0x01;
+        whole_matrix[nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES - 1] ^= (byte) 0x01;
 
-        for (int jj = 0; jj < nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES; ++jj) {
-            System.out.print(whole_matrix[jj]);
-            System.out.print(" ");
-        } System.out.println();
+        System.out.println("Going to print fst of whole_matrix:");
+        Main.dump_bytes(whole_matrix, nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES );
+
+        Sponge sponge = new Sponge();
+
+        System.out.println("Going to print sponge.state:");
+        Main.dump_bytes(sponge.state, sponge.state.length);
 
         return 42L;
     }
