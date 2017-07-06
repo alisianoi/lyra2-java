@@ -114,7 +114,7 @@ public class Lyra2 {
         Sponge sponge = new Sponge();
 
         System.out.println("Going to print sponge.state:");
-        Go.dump_bytes(sponge.state, sponge.state.length);
+        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
 
         System.out.println("Echo blake2b_IV longs:");
         Go.dump_bytes(Sponge.blake2b_IV, 64);
