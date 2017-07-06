@@ -49,25 +49,6 @@ public class Main {
     )
     Integer BLOCK_LEN_INT64 = 12;
 
-    public static void dump_bytes(byte[] bytes, int n, int m) {
-        int div = n / m;
-        int mod = n % m;
-
-        for (int i = 0; i != div; ++i) {
-            for (int j = 0; j != m; ++j) {
-                System.out.printf("%02X ", bytes[i * m + j]);
-            } System.out.println();
-        }
-
-        for (int i = 0; i != mod; ++i) {
-            System.out.printf("%02X ", bytes[div * m + i]);
-        } System.out.println();
-    }
-
-    public static void dump_bytes(byte[] bytes, int n) {
-        Main.dump_bytes(bytes, n, 16);
-    }
-
     public static void main(String[] argv) {
         Main main = new Main();
         JCommander jc = JCommander.newBuilder().addObject(main).build();

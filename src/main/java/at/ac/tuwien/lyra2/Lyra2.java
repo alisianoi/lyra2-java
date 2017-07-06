@@ -109,13 +109,15 @@ public class Lyra2 {
         whole_matrix[nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES - 1] ^= (byte) 0x01;
 
         System.out.println("Going to print fst of whole_matrix:");
-        Main.dump_bytes(whole_matrix, nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES );
+        Go.dump_bytes(whole_matrix, nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES );
 
         Sponge sponge = new Sponge();
 
         System.out.println("Going to print sponge.state:");
-        Main.dump_bytes(sponge.state, sponge.state.length);
+        Go.dump_bytes(sponge.state, sponge.state.length);
 
+        System.out.println("Echo blake2b_IV longs:");
+        Go.dump_bytes(Sponge.blake2b_IV, 64);
         return 42L;
     }
 }
