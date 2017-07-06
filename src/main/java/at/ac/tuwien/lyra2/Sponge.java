@@ -10,6 +10,8 @@ public class Sponge {
 
     public long[] state = new long[16];
 
+    public int rounds;
+
     /**
      * Mimic byte flip that happens in c with memcpy
      *
@@ -27,7 +29,7 @@ public class Sponge {
                 ;
     }
 
-    public Sponge() {
+    public Sponge(Parameters params) {
         for (int i = 0; i != 8; ++i) {
             state[i] = 0;
         }
@@ -35,6 +37,8 @@ public class Sponge {
         for (int i = 0; i != 8; ++i) {
             state[i + 8] = flip_long(blake2b_IV[i]);
         }
+
+        this.rounds = params.rounds;
     }
 
     /**
@@ -56,78 +60,92 @@ public class Sponge {
     }
 
     public void G(final int r, final int i, final int a, final int b, final int c, final int d) {
-        if (r == 0 && i == 0) {
-            final long xa = flip_long(state[a]);
-            final long xb = flip_long(state[b]);
-            System.out.printf("%16X + %16X = %16X\n", xa, xb, xa + xb);
-        }
+//        if (r == 0 && i == 0) {
+//            final long xa = flip_long(state[a]);
+//            final long xb = flip_long(state[b]);
+//            System.out.printf("%16X + %16X = %16X\n", xa, xb, xa + xb);
+//        }
         state[a] = flip_long(flip_long(state[a]) + flip_long(state[b]));
 
-        if (r == 0 && i == 0) {
-            final long xd = flip_long(state[d]);
-            final long xa = flip_long(state[a]);
-            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
-        }
+//        if (r == 0 && i == 0) {
+//            final long xd = flip_long(state[d]);
+//            final long xa = flip_long(state[a]);
+//            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
+//        }
         state[d] = flip_long(rotr64(flip_long(state[d]) ^ flip_long(state[a]), 32));
 
-        if (r == 0 && i == 0) {
-            final long xc = flip_long(state[c]);
-            final long xd = flip_long(state[d]);
-            System.out.printf("%16X + %16X = %16X\n", xc, xd, xc + xd);
-        }
+//        if (r == 0 && i == 0) {
+//            final long xc = flip_long(state[c]);
+//            final long xd = flip_long(state[d]);
+//            System.out.printf("%16X + %16X = %16X\n", xc, xd, xc + xd);
+//        }
         state[c] = flip_long(flip_long(state[c]) + flip_long(state[d]));
 
-        if (r == 0 && i == 0) {
-            final long xb = flip_long(state[b]);
-            final long xc = flip_long(state[c]);
-            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
-        }
+//        if (r == 0 && i == 0) {
+//            final long xb = flip_long(state[b]);
+//            final long xc = flip_long(state[c]);
+//            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
+//        }
         state[b] = flip_long(rotr64(flip_long(state[b]) ^ flip_long(state[c]), 24));
 
-        if (r == 0 && i == 0) {
-            final long xa = flip_long(state[a]);
-            final long xb = flip_long(state[b]);
-            System.out.printf("%16X + %16X = %16X\n", xa, xb, xa + xb);
-        }
+//        if (r == 0 && i == 0) {
+//            final long xa = flip_long(state[a]);
+//            final long xb = flip_long(state[b]);
+//            System.out.printf("%16X + %16X = %16X\n", xa, xb, xa + xb);
+//        }
         state[a] = flip_long(flip_long(state[a]) + flip_long(state[b]));
 
-        if (r == 0 && i == 0) {
-            final long xd = flip_long(state[d]);
-            final long xa = flip_long(state[a]);
-            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
-        }
+//        if (r == 0 && i == 0) {
+//            final long xd = flip_long(state[d]);
+//            final long xa = flip_long(state[a]);
+//            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
+//        }
         state[d] = flip_long(rotr64(flip_long(state[d]) ^ flip_long(state[a]), 16));
 
-        if (r == 0 && i == 0) {
-            final long xc = flip_long(state[c]);
-            final long xd = flip_long(state[d]);
-            System.out.printf("%16X + %16X = %16X\n", xc, xd, xc + xd);
-        }
+//        if (r == 0 && i == 0) {
+//            final long xc = flip_long(state[c]);
+//            final long xd = flip_long(state[d]);
+//            System.out.printf("%16X + %16X = %16X\n", xc, xd, xc + xd);
+//        }
         state[c] = flip_long(flip_long(state[c]) + flip_long(state[d]));
 
-        if (r == 0 && i == 0) {
-            final long xb = flip_long(state[b]);
-            final long xc = flip_long(state[c]);
-            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
-        }
+//        if (r == 0 && i == 0) {
+//            final long xb = flip_long(state[b]);
+//            final long xc = flip_long(state[c]);
+//            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
+//        }
         state[b] = flip_long(rotr64(flip_long(state[b]) ^ flip_long(state[c]), 63));
 
-        if (r == 0 && i < 3) {
-            System.out.printf("G round: %02d step: %02d\n", r, i);
-            Go.dump_bytes(state, 8 * state.length);
-        }
+//        if (r == 0 && i < 3) {
+//            System.out.printf("G round: %02d step: %02d\n", r, i);
+//            Go.dump_bytes(state, 8 * state.length);
+//        }
+    }
+
+    public void round_lyra(int round) {
+        G(round, 0, 0, 4,  8, 12);
+        G(round, 1, 1, 5,  9, 13);
+        G(round, 2, 2, 6, 10, 14);
+        G(round, 3, 3, 7, 11, 15);
+        G(round, 4, 0, 5, 10, 15);
+        G(round, 5, 1, 6, 11, 12);
+        G(round, 6, 2, 7,  8, 13);
+        G(round, 7, 3, 4,  9, 14);
     }
 
     public void sponge_lyra() {
-        for (int i = 0; i != 12; ++i) {
-            G(i, 0, 0, 4,  8, 12);
-            G(i, 1, 1, 5,  9, 13);
-            G(i, 2, 2, 6, 10, 14);
-            G(i, 3, 3, 7, 11, 15);
-            G(i, 4, 0, 5, 10, 15);
-            G(i, 5, 1, 6, 11, 12);
-            G(i, 6, 2, 7,  8, 13);
-            G(i, 7, 3, 4,  9, 14);
+        for (int round = 0; round != 12; ++round) {
+            round_lyra(round);
         }
+    }
+
+    public void reduced_sponge_lyra() {
+        for (int round = 0; round != this.rounds; ++round) {
+            round_lyra(round);
+        }
+    }
+
+    public void reduced_squeeze_row0() {
+
     }
 }

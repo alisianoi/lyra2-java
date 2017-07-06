@@ -1,58 +1,50 @@
 package at.ac.tuwien.lyra2;
 
 public class Lyra2 {
-    private final static int SIZEOF_INT = 4;
-
-    private final static int BLOCK_LEN_BLAKE2_SAFE_INT64 = 8;
-    private final static int BLOCK_LEN_BLAKE2_SAFE_BYTES = 64;
-
-    public static Long phs(
-            byte[] dst, int dstlen,
-            byte[] src, int srclen,
-            byte[] salt, int saltlen,
-            int t_cost, int m_cost,
-            /* parameters below are set at compile time in C implementation */
-            int N_COLS, int BLOCK_LEN_INT64) {
-        return hash(dst, dstlen, src, srclen, salt, saltlen, t_cost, m_cost, N_COLS, BLOCK_LEN_INT64);
+    public static Long phs(byte[] dst, byte[] src, byte[] salt, Parameters params) {
+        return hash(dst, src, salt, params);
     }
 
-    public static Long hash(
-            byte[] dst, int dstlen,
-            byte[] src, int srclen,
-            byte[] salt, int saltlen,
-            int t_cost, int m_cost,
-            /* parameters below are set at compile time in C implementation */
-            int N_COLS, int BLOCK_LEN_INT64) {
-        Long gap = 1L;
-        Long step = 1L;
+    public static Long hash(byte[] dst, byte[] src, byte[] salt, Parameters params) {
+        Long    gap = 1L;
+        Long   step = 1L;
         Long window = 2L;
-        Long sqrt = 2L;
+        Long   sqrt = 2L;
 
-        Long row0 = 3L;
+        Long  row0 = 3L;
         Long prev0 = 2L;
-        Long row1 = 1L;
+        Long  row1 = 1L;
         Long prev1 = 0L;
 
-        int ROW_LEN_INT64 = BLOCK_LEN_INT64 * N_COLS;
-        int ROW_LEN_BYTES =   ROW_LEN_INT64 * 8;
+        int NCOLS = params.NCOLS;
 
-        int i = m_cost * ROW_LEN_BYTES;
+        int SIZEOF_INT = params.SIZEOF_INT;
+        int BLOCK_LEN_INT64 = params.BLOCK_LEN_INT64;
+        int BLOCK_LEN_BLAKE2_SAFE_INT64 = params.BLOCK_LEN_BLAKE2_SAFE_INT64;
+        int BLOCK_LEN_BLAKE2_SAFE_BYTES = params.BLOCK_LEN_BLAKE2_SAFE_BYTES;
 
-//        System.out.println("Will allocate " + i + " bytes for whole matrix");
+        int ROW_LEN_INT64 = NCOLS * BLOCK_LEN_INT64;
+        int ROW_LEN_BYTES =     8 *   ROW_LEN_INT64;
+
+        int srclen = src.length;
+        int dstlen = dst.length;
+        int sltlen = salt.length;
+        int tcost = params.tcost;
+        int mcost = params.mcost;
 
         // i == m_cost (3) * BLOCK_LEN_INT64 (12) * N_COLS (256) * 8
         // C allocation is in bytes, so divide
-        long[] whole_matrix = new long[m_cost * ROW_LEN_INT64];
+        long[] whole_matrix = new long[mcost * ROW_LEN_INT64];
 
-        int[] memory_matrix = new int[m_cost];
+        int[] memory_matrix = new int[mcost];
 
-        for (int ii = 0, row = 0; ii < m_cost; ++ii, row += ROW_LEN_INT64) {
+        for (int ii = 0, row = 0; ii < mcost; ++ii, row += ROW_LEN_INT64) {
             memory_matrix[ii] = row;
         }
 
         //==== Padding (password + salt + params) with 10*1 ====//
         // See comment about constant 6 in original code
-        int nBlocksInput = (saltlen + srclen + 6 * SIZEOF_INT) / BLOCK_LEN_BLAKE2_SAFE_BYTES + 1;
+        int nBlocksInput = (srclen + sltlen + 6 * SIZEOF_INT) / BLOCK_LEN_BLAKE2_SAFE_BYTES + 1;
 
 //        System.out.println("nBlocksInput: " + nBlocksInput);
 //
@@ -74,16 +66,17 @@ public class Lyra2 {
             buffer0[ii] = src[jj];
         }
 
-        for (int jj = 0; jj < saltlen; ++ii, ++jj) {
+        for (int jj = 0; jj < sltlen; ++ii, ++jj) {
             buffer0[ii] = salt[jj];
         }
 
-        Go.memcpy1(buffer0, ii,  dstlen); ii += 4;
-        Go.memcpy1(buffer0, ii,  srclen); ii += 4;
-        Go.memcpy1(buffer0, ii, saltlen); ii += 4;
-        Go.memcpy1(buffer0, ii,  t_cost); ii += 4;
-        Go.memcpy1(buffer0, ii,  m_cost); ii += 4;
-        Go.memcpy1(buffer0, ii,  N_COLS); ii += 4;
+        // NOTE: the order of Go.memcpy1 calls matters
+        Go.memcpy1(buffer0, ii, dstlen); ii += 4;
+        Go.memcpy1(buffer0, ii, srclen); ii += 4;
+        Go.memcpy1(buffer0, ii, sltlen); ii += 4;
+        Go.memcpy1(buffer0, ii, tcost); ii += 4;
+        Go.memcpy1(buffer0, ii, mcost); ii += 4;
+        Go.memcpy1(buffer0, ii, NCOLS); ii += 4;
 
         buffer0[ii] = (byte) 0x80;
         buffer0[nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES - 1] |= (byte) 0x01;
@@ -97,7 +90,7 @@ public class Lyra2 {
         System.out.println("Going to print whole_matrix:");
         Go.dump_bytes(whole_matrix, buffer0.length);
 
-        Sponge sponge = new Sponge();
+        Sponge sponge = new Sponge(params);
 
         System.out.println("Echo sponge.state after sponge init:");
         Go.dump_bytes(sponge.state, 8 * sponge.state.length);
