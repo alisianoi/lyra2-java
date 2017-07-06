@@ -2,16 +2,9 @@ package at.ac.tuwien.lyra2;
 
 public class Lyra2 {
     private final static int SIZEOF_INT = 4;
-    // Taken from Sponge.h
+
     private final static int BLOCK_LEN_BLAKE2_SAFE_INT64 = 8;
     private final static int BLOCK_LEN_BLAKE2_SAFE_BYTES = 64;
-
-    private static void memcpy1(byte[] dst, int offset, int src) {
-        dst[offset + 0] = (byte) (src);
-        dst[offset + 1] = (byte) (src >> 8);
-        dst[offset + 2] = (byte) (src >> 16);
-        dst[offset + 3] = (byte) (src >> 24);
-    }
 
     public static Long phs(
             byte[] dst, int dstlen,
@@ -49,14 +42,12 @@ public class Lyra2 {
 
         // i == m_cost (3) * BLOCK_LEN_INT64 (12) * N_COLS (256) * 8
         // C allocation is in bytes, so divide
-        byte[] whole_matrix = new byte[i];
+        long[] whole_matrix = new long[m_cost * ROW_LEN_INT64];
 
         int[] memory_matrix = new int[m_cost];
 
-        int row = 0;
-        for (int ii = 0; ii < m_cost; ++ii) {
+        for (int ii = 0, row = 0; ii < m_cost; ++ii, row += ROW_LEN_INT64) {
             memory_matrix[ii] = row;
-            row += ROW_LEN_BYTES;
         }
 
         //==== Padding (password + salt + params) with 10*1 ====//
@@ -65,12 +56,6 @@ public class Lyra2 {
 
 //        System.out.println("nBlocksInput: " + nBlocksInput);
 //
-//        System.out.println("Going to print salt once more:");
-//        for (int s = 0; s < salt.length; ++s) {
-//            System.out.print(salt[s]);
-//            System.out.print(" ");
-//        } System.out.println();
-//
 //        System.out.println("Allocating that many bytes:");
 //        System.out.println(nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES);
 //
@@ -78,46 +63,54 @@ public class Lyra2 {
 //        System.out.println("saltlen " + saltlen);
 
         int ii;
-        for (ii = 0; ii < nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES; ++ii) {
+        for (ii = 0; ii < nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_INT64; ++ii) {
             whole_matrix[ii] = 0;
         }
 
         ii = 0;
-        for (int jj = 0; jj < srclen; ++jj) {
-            whole_matrix[ii] = src[jj]; ii++;
+        byte[] buffer0 = new byte[nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES];
+
+        for (int jj = 0; jj < srclen; ++ii, ++jj) {
+            buffer0[ii] = src[jj];
         }
 
-        for (int jj = 0; jj < saltlen; ++jj) {
-            whole_matrix[ii] = salt[jj]; ii++;
+        for (int jj = 0; jj < saltlen; ++ii, ++jj) {
+            buffer0[ii] = salt[jj];
         }
 
-        memcpy1(whole_matrix, ii, dstlen);
-        ii += 4;
-        memcpy1(whole_matrix, ii, srclen);
-        ii += 4;
-        memcpy1(whole_matrix, ii, saltlen);
-        ii += 4;
-        memcpy1(whole_matrix, ii, t_cost);
-        ii += 4;
-        memcpy1(whole_matrix, ii, m_cost);
-        ii += 4;
-        memcpy1(whole_matrix, ii, N_COLS);
-        ii += 4;
+        Go.memcpy1(buffer0, ii,  dstlen); ii += 4;
+        Go.memcpy1(buffer0, ii,  srclen); ii += 4;
+        Go.memcpy1(buffer0, ii, saltlen); ii += 4;
+        Go.memcpy1(buffer0, ii,  t_cost); ii += 4;
+        Go.memcpy1(buffer0, ii,  m_cost); ii += 4;
+        Go.memcpy1(buffer0, ii,  N_COLS); ii += 4;
 
-        whole_matrix[ii] = (byte) 0x80;
+        buffer0[ii] = (byte) 0x80;
+        buffer0[nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES - 1] |= (byte) 0x01;
 
-        whole_matrix[nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES - 1] ^= (byte) 0x01;
+        final long[] buffer1 = Go.pack_longs(buffer0);
 
-        System.out.println("Going to print fst of whole_matrix:");
-        Go.dump_bytes(whole_matrix, nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES );
+        for (int jj = 0; jj != buffer1.length; ++jj) {
+            whole_matrix[jj] = buffer1[jj];
+        }
+
+        System.out.println("Going to print whole_matrix:");
+        Go.dump_bytes(whole_matrix, buffer0.length);
 
         Sponge sponge = new Sponge();
 
-        System.out.println("Going to print sponge.state:");
+        System.out.println("Echo sponge.state after sponge init:");
         Go.dump_bytes(sponge.state, 8 * sponge.state.length);
 
-        System.out.println("Echo blake2b_IV longs:");
-        Go.dump_bytes(Sponge.blake2b_IV, 64);
+        for (int jj = 0, offset = 0; jj < nBlocksInput; ++jj) {
+            sponge.absorb_block_blake2b_safe(whole_matrix, offset);
+
+            offset += BLOCK_LEN_BLAKE2_SAFE_INT64;
+        }
+
+        System.out.println("Echo sponge.state after first absorb:");
+        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
+
         return 42L;
     }
 }
