@@ -11,10 +11,10 @@ public class Lyra2 {
         Long window = 2L;
         Long   sqrt = 2L;
 
-        Long  row0 = 3L;
-        Long prev0 = 2L;
-        Long  row1 = 1L;
-        Long prev1 = 0L;
+        int  row0 = 3;
+        int prev0 = 2;
+        int  row1 = 1;
+        int prev1 = 0;
 
         int NCOLS = params.NCOLS;
 
@@ -114,6 +114,23 @@ public class Lyra2 {
         Go.dump_bytes(sponge.state, 8 * sponge.state.length);
         System.out.println("Echo whole_matrix after reduced duplex row1 and row2 (2):");
         Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[2]);
+
+        for (row0 = 3; row0 != mcost; ++row0) {
+            sponge.reduced_duplex_row_filling(
+                    whole_matrix,
+                    memory_matrix[row1],
+                    memory_matrix[prev0],
+                    memory_matrix[prev1],
+                    memory_matrix[row0]
+            );
+
+            System.out.printf("Echo whole_matrix after reduced duplex row filling (%2d)\n", row1);
+            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[row1]);
+            System.out.printf("Echo whole_matrix after reduced duplex row filling (%2d)\n", row0);
+            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[row0]);
+
+            return 42L;
+        }
 
         return 42L;
     }

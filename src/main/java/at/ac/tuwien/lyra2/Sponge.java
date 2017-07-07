@@ -54,9 +54,6 @@ public class Sponge {
             state[i] ^= in[offset + i];
         }
 
-        System.out.println("Echo sponge.state after first XOR:");
-        Go.dump_bytes(state, 8 * state.length);
-
         sponge_lyra();
     }
 
@@ -184,6 +181,47 @@ public class Sponge {
 
             word1 += BLOCK_LEN_INT64;
             word2 -= BLOCK_LEN_INT64;
+        }
+    }
+
+    /**
+     * Perform a duplexing operation
+     *
+     * All of the offsets are indecies into @param{out} that denote a start of some *row* of bytes.
+     *
+     * @param out     -- a matrix that both provides and receives bytes
+     * @param offset0 -- a row that provides bytes and receives bytes too
+     * @param offset1 -- a row that provides bytes (latest initialized row)
+     * @param offset2 -- a row that provides bytes (latest revisited and updated row)
+     * @param offset3 -- a row that receives bytes
+     */
+    public void reduced_duplex_row_filling(long out[], int offset0, int offset1, int offset2, int offset3) {
+        int word0 = offset0;
+        int word1 = offset1;
+        int word2 = offset2;
+        int word3 = offset3 + (NCOLS - 1) * BLOCK_LEN_INT64;
+
+        for (int i = 0; i != NCOLS; ++i) {
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                state[j] ^= flip_long(
+                        flip_long(out[word0 + j]) + flip_long(out[word1 + j]) + flip_long(out[word2 + j])
+                );
+            }
+
+            reduced_sponge_lyra();
+
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                out[word3 + j] = out[word1 + j] ^ state[j];
+            }
+
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                out[word0 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];
+            }
+
+            word0 += BLOCK_LEN_INT64;
+            word1 += BLOCK_LEN_INT64;
+            word2 += BLOCK_LEN_INT64;
+            word3 -= BLOCK_LEN_INT64;
         }
     }
 }
