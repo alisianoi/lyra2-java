@@ -87,7 +87,7 @@ public class Lyra2 {
             whole_matrix[jj] = buffer1[jj];
         }
 
-        System.out.println("Going to print whole_matrix:");
+        System.out.println("Echo whole_matrix after initial copy:");
         Go.dump_bytes(whole_matrix, buffer0.length);
 
         Sponge sponge = new Sponge(params);
@@ -104,6 +104,13 @@ public class Lyra2 {
         System.out.println("Echo sponge.state after first absorb:");
         Go.dump_bytes(sponge.state, 8 * sponge.state.length);
 
+        sponge.reduced_squeeze_row0(whole_matrix, memory_matrix[0]);
+
+        System.out.println("Echo sponge.state after reduced squeeze row0:");
+        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
+
+        System.out.println("Echo whole_matrix after reduced squeeze row0:");
+        Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[0]);
         return 42L;
     }
 }

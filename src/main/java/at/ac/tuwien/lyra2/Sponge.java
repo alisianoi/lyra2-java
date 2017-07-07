@@ -10,7 +10,9 @@ public class Sponge {
 
     public long[] state = new long[16];
 
-    public int rounds;
+    public final int rounds;
+    public final int NCOLS;
+    public final int BLOCK_LEN_INT64;
 
     /**
      * Mimic byte flip that happens in c with memcpy
@@ -39,6 +41,9 @@ public class Sponge {
         }
 
         this.rounds = params.rounds;
+
+        this.NCOLS = params.NCOLS;
+        this.BLOCK_LEN_INT64 = params.BLOCK_LEN_INT64;
     }
 
     /**
@@ -145,7 +150,20 @@ public class Sponge {
         }
     }
 
-    public void reduced_squeeze_row0() {
+    /**
+     * TODO: below, either word or i could be optimized out
+     */
+    public void reduced_squeeze_row0(long[] out, int offset) {
+        int word = (NCOLS - 1) * BLOCK_LEN_INT64;
 
+        for (int i = 0; i != NCOLS; ++i) {
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                out[offset + word + j] = state[j];
+            }
+
+            word -= BLOCK_LEN_INT64;
+
+            reduced_sponge_lyra();
+        }
     }
 }
