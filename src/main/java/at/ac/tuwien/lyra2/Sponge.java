@@ -166,4 +166,24 @@ public class Sponge {
             reduced_sponge_lyra();
         }
     }
+
+    public void reduced_duplex_row1_and_row2(long[] out, int offset1, int offset2) {
+        int word1 = 0;
+        int word2 = (NCOLS - 1) * BLOCK_LEN_INT64;
+
+        for (int i = 0; i != NCOLS; ++i) {
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                state[j] ^= out[offset1 + word1 + j];
+            }
+
+            reduced_sponge_lyra();
+
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                out[offset2 + word2 + j] = out[offset1 + word1 + j] ^ state[j];
+            }
+
+            word1 += BLOCK_LEN_INT64;
+            word2 -= BLOCK_LEN_INT64;
+        }
+    }
 }

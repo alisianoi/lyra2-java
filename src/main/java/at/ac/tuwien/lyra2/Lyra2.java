@@ -23,8 +23,8 @@ public class Lyra2 {
         int BLOCK_LEN_BLAKE2_SAFE_INT64 = params.BLOCK_LEN_BLAKE2_SAFE_INT64;
         int BLOCK_LEN_BLAKE2_SAFE_BYTES = params.BLOCK_LEN_BLAKE2_SAFE_BYTES;
 
-        int ROW_LEN_INT64 = NCOLS * BLOCK_LEN_INT64;
-        int ROW_LEN_BYTES =     8 *   ROW_LEN_INT64;
+        int ROW_LEN_INT64 = NCOLS * BLOCK_LEN_INT64; //     256 * 12
+        int ROW_LEN_BYTES =     8 *   ROW_LEN_INT64; // 8 * 256 * 12
 
         int srclen = src.length;
         int dstlen = dst.length;
@@ -32,27 +32,17 @@ public class Lyra2 {
         int tcost = params.tcost;
         int mcost = params.mcost;
 
-        // i == m_cost (3) * BLOCK_LEN_INT64 (12) * N_COLS (256) * 8
-        // C allocation is in bytes, so divide
-        long[] whole_matrix = new long[mcost * ROW_LEN_INT64];
+        long[] whole_matrix = new long[mcost * ROW_LEN_INT64]; // 3 * 256 * 12
 
         int[] memory_matrix = new int[mcost];
 
-        for (int ii = 0, row = 0; ii < mcost; ++ii, row += ROW_LEN_INT64) {
-            memory_matrix[ii] = row;
+        for (int i = 0, row = 0; i != mcost; ++i, row += ROW_LEN_INT64) {
+            memory_matrix[i] = row;
         }
 
         //==== Padding (password + salt + params) with 10*1 ====//
-        // See comment about constant 6 in original code
+        // See comment about constant 6 in original code: make it 8 integers total
         int nBlocksInput = (srclen + sltlen + 6 * SIZEOF_INT) / BLOCK_LEN_BLAKE2_SAFE_BYTES + 1;
-
-//        System.out.println("nBlocksInput: " + nBlocksInput);
-//
-//        System.out.println("Allocating that many bytes:");
-//        System.out.println(nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES);
-//
-//        System.out.println("srclen " + srclen);
-//        System.out.println("saltlen " + saltlen);
 
         int ii;
         for (ii = 0; ii < nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_INT64; ++ii) {
@@ -108,9 +98,23 @@ public class Lyra2 {
 
         System.out.println("Echo sponge.state after reduced squeeze row0:");
         Go.dump_bytes(sponge.state, 8 * sponge.state.length);
-
         System.out.println("Echo whole_matrix after reduced squeeze row0:");
         Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[0]);
+
+        sponge.reduced_duplex_row1_and_row2(whole_matrix, memory_matrix[0], memory_matrix[1]);
+
+        System.out.println("Echo sponge.state after reduced duplex row1 and row2 (1):");
+        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
+        System.out.println("Echo whole_matrix after reduced duplex row1 and row2 (1):");
+        Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[1]);
+
+        sponge.reduced_duplex_row1_and_row2(whole_matrix, memory_matrix[1], memory_matrix[2]);
+
+        System.out.println("Echo sponge.state after reduced duplex row1 and row2 (2):");
+        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
+        System.out.println("Echo whole_matrix after reduced duplex row1 and row2 (2):");
+        Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[2]);
+
         return 42L;
     }
 }
