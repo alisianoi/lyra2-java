@@ -8,6 +8,18 @@ public class Go {
         dst[offset + 3] = (byte) (src >>> 24);
     }
 
+    public static byte[] pack_bytes(long[] longs) {
+        byte[] bytes = new byte[8 * longs.length];
+
+        for (int i = 0; i != longs.length; ++i) {
+            for (int j = 0; j != 8; ++j) {
+                bytes[8 * i + j] = (byte) (longs[i] >>> (56 - j * 8));
+            }
+        }
+
+        return bytes;
+    }
+
     public static long[] pack_longs(byte[] bytes) {
         int div = bytes.length / 8;
         int mod = bytes.length % 8;
@@ -44,45 +56,44 @@ public class Go {
         return longs;
     }
 
-    public static void dump_bytes(byte[] bytes, int n, int m) {
+    /**
+     * Dump bytes into System.out as hex in an n-by-m grid
+     *
+     * @param bytes - echo these bytes to console
+     * @param n     - try to have n rows
+     * @param m     - try to have m cols
+     * @param s     - skip s bytes ahead
+     */
+    public static void dump_bytes(byte[] bytes, int n, int m, int s) {
         int div = n / m;
         int mod = n % m;
 
+        if (s + n > bytes.length) {
+            System.out.println("You ask to dump " + (s + n) + " byte(s)");
+            System.out.println("Buffer has only " + bytes.length + " byte(s)");
+            return;
+        }
+
         for (int i = 0; i != div; ++i) {
             for (int j = 0; j != m; ++j) {
-                System.out.printf("%02X ", bytes[i * m + j]);
+                System.out.printf("%02X ", bytes[s + i * m + j]);
             } System.out.println();
         }
 
         for (int i = 0; i != mod; ++i) {
-            System.out.printf("%02X ", bytes[div * m + i]);
+            System.out.printf("%02X ", bytes[s + div * m + i]);
         } System.out.println();
     }
 
     public static void dump_bytes(byte[] bytes, int n) {
-        dump_bytes(bytes, n, 16);
+        dump_bytes(bytes, n, 16, 0);
     }
 
-    public static void dump_bytes(long[] longs, int n, int m) {
-        byte[] bytes = new byte[n];
-
-        int div = n / 8;
-        int mod = n % 8;
-
-        for (int i = 0; i != div; ++i) {
-            for (int j = 0; j != 8; ++j) {
-                bytes[8 * i + j] = (byte) (longs[i] >>> (64 - 8 - j * 8));
-            }
-        }
-
-        for (int i = 0; i != mod; ++i) {
-            bytes[8 * div + i] = (byte) (longs[div] >>> (64 - 8 - i * 8));
-        }
-
-        dump_bytes(bytes, n, m);
+    public static void dump_bytes(long[] longs, int n, int m, int s) {
+        dump_bytes(pack_bytes(longs), n, m, s);
     }
 
     public static void dump_bytes(long[] longs, int n) {
-        dump_bytes(longs, n, 16);
+        dump_bytes(longs, n, 16, 0);
     }
 }
