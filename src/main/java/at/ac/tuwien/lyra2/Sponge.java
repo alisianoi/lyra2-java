@@ -47,14 +47,60 @@ public class Sponge {
     }
 
     /**
-     * @param in -- a hard-coded 512 bits (Blake2b and BlaMka restriction)
+     * @param src -- a hard-coded 512 bits (Blake2b and BlaMka restriction)
      */
-    public void absorb_block_blake2b_safe(long[] in, int offset) {
+    public void absorb_block_blake2b_safe(final long[] src, final int offset) {
         for (int i = 0; i < 8; ++i) {
-            state[i] ^= in[offset + i];
+            state[i] ^= src[offset + i];
         }
 
         sponge_lyra();
+    }
+
+    public void absorb_column(long[] src, int offset) {
+        for (int i = 0; i != BLOCK_LEN_INT64; ++i) {
+            state[i] ^= src[offset + i];
+        }
+
+        sponge_lyra();
+    }
+
+    public void squeeze(byte[] dst, final long[] src, final int len) {
+        final int BLOCK_LEN_BYTES = 8 * BLOCK_LEN_INT64; // 8 * 12
+
+        final int div = len / BLOCK_LEN_BYTES; // complete blocks, 96 bytes each
+        final int mod = len % BLOCK_LEN_BYTES; // incomplete block, [0..96] bytes
+
+        for (int i = 0; i != div; ++i) {
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                final byte[] bytes = Go.pack_bytes(src[i * BLOCK_LEN_INT64 + j]);
+
+                for (int k = 0; k != 8; ++k) {
+                    dst[i * BLOCK_LEN_BYTES + 8 * j + k] = bytes[k];
+                }
+            }
+
+            sponge_lyra();
+        }
+
+        final int div8 = mod / 8;
+        final int mod8 = mod % 8;
+
+        for (int i = 0; i != div8; ++i) {
+            final byte[] bytes = Go.pack_bytes(src[div * BLOCK_LEN_INT64 + i]);
+
+            for (int j = 0; j != 8; ++j) {
+                dst[div * BLOCK_LEN_BYTES + 8 * i + j] = bytes[j];
+            }
+        }
+
+        if (mod8 != 0) {
+            final byte[] bytes = Go.pack_bytes(src[div * BLOCK_LEN_INT64 + 8 * div8]);
+
+            for (int i = 0; i != mod8; ++i) {
+                dst[div * BLOCK_LEN_BYTES + 8 * div8 + i] = bytes[i];
+            }
+        }
     }
 
     public static long rotr64(final long w, final int b) {
