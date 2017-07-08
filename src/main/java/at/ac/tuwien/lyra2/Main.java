@@ -20,5 +20,7 @@ public class Main {
         // TODO: you should overwrite the params.pass now
 
         Lyra2.phs(hash, pass, salt, params);
+
+        Go.dump_bytes(hash, hash.length);
     }
 }

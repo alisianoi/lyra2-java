@@ -79,6 +79,7 @@ public class Lyra2 {
 
         System.out.println("Echo whole_matrix after initial copy:");
         Go.dump_bytes(whole_matrix, buffer0.length);
+        // Wrap-up phase:
 
         Sponge sponge = new Sponge(params);
 
@@ -185,6 +186,14 @@ public class Lyra2 {
             prev1 = row1;
         }
 
-        return 42L;
+        // Wrap-up phase:
+        sponge.absorb_column(whole_matrix, memory_matrix[row0]);
+
+        System.out.println("Echo sponge state after absorb column");
+        Go.dump_bytes(sponge.state, 128);
+
+        sponge.squeeze(dst, sponge.state, dstlen);
+
+        return 0L;
     }
 }
