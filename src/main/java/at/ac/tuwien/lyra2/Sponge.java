@@ -185,7 +185,7 @@ public class Sponge {
     }
 
     /**
-     * Perform a duplexing operation
+     * Do a duplexing operation
      *
      * All of the offsets are indecies into @param{out} that denote a start of some *row* of bytes.
      *
@@ -222,6 +222,67 @@ public class Sponge {
             word1 += BLOCK_LEN_INT64;
             word2 += BLOCK_LEN_INT64;
             word3 -= BLOCK_LEN_INT64;
+        }
+    }
+
+    /**
+     * Do a duplexing operation
+     *
+     * All of the offsets are indecies into @param{out} that denote a start of some *row* of bytes.
+     *
+     * @param offset0 -- a row that provides bytes and receives bytes
+     * @param offset1 -- a row that provides bytes and receives bytes after rotation
+     * @param offset2 -- a row that provides bytes
+     * @param offset3 -- a row that provides bytes
+     */
+    public void reduced_duplex_row_wandering(long[] out, int offset0, int offset1, int offset2, int offset3) {
+        int word0 = offset0;
+        int word1 = offset1;
+
+        for (int i = 0; i != NCOLS; ++i) {
+
+//            final int st4 = (int) flip_long(state[4]);
+//            final int st6 = (int) flip_long(state[6]);
+
+            final int rndcol0 = Math.floorMod((int) flip_long(state[4]), NCOLS) * BLOCK_LEN_INT64;
+            final int rndcol1 = Math.floorMod((int) flip_long(state[6]), NCOLS) * BLOCK_LEN_INT64;
+
+//            System.out.printf("state[4]: %16X\n", st4);
+//            System.out.printf("state[6]: %16X\n", st6);
+//            System.out.printf("state[4] %% NCOLS: %16X\n", Math.floorMod(st4, NCOLS));
+//            System.out.printf("state[6] %% NCOLS: %16X\n", Math.floorMod(st6, NCOLS));
+//            System.out.printf("rndcol0: %16X\n", rndcol0);
+//            System.out.printf("rndcol1: %16X\n", rndcol1);
+
+            final int word2 = offset2 + rndcol0;
+            final int word3 = offset3 + rndcol1;
+
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                state[j] ^= flip_long(flip_long(out[word0 + j])
+                        + flip_long(out[word1 + j])
+                        + flip_long(out[word2 + j])
+                        + flip_long(out[word3 + j])
+                );
+            }
+
+//            System.out.println("state after first loop:");
+//            Go.dump_bytes(state, 128);
+
+            reduced_sponge_lyra();
+
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                out[word0 + j] ^= state[j];
+            }
+
+//            System.out.println("out[word0 + j] after xor");
+//            Go.dump_bytes(out, 128, 16, 8 * word0);
+
+            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                out[word1 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];
+            }
+
+            word0 += BLOCK_LEN_INT64;
+            word1 += BLOCK_LEN_INT64;
         }
     }
 }

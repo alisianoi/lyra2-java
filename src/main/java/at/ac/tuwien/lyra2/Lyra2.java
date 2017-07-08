@@ -6,10 +6,10 @@ public class Lyra2 {
     }
 
     public static Long hash(byte[] dst, byte[] src, byte[] salt, Parameters params) {
-        Long    gap = 1L;
-        Long   step = 1L;
-        Long window = 2L;
-        Long   sqrt = 2L;
+        int    gap = 1;
+        int   step = 1;
+        int window = 2;
+        int   sqrt = 2;
 
         int  row0 = 3;
         int prev0 = 2;
@@ -91,6 +91,7 @@ public class Lyra2 {
             offset += BLOCK_LEN_BLAKE2_SAFE_INT64;
         }
 
+        // Setup phase:
         System.out.println("Echo sponge.state after first absorb:");
         Go.dump_bytes(sponge.state, 8 * sponge.state.length);
 
@@ -115,6 +116,7 @@ public class Lyra2 {
         System.out.println("Echo whole_matrix after reduced duplex row1 and row2 (2):");
         Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[2]);
 
+        // Setup phase: filling loop:
         for (row0 = 3; row0 != mcost; ++row0) {
             sponge.reduced_duplex_row_filling(
                     whole_matrix,
@@ -124,12 +126,63 @@ public class Lyra2 {
                     memory_matrix[row0]
             );
 
-            System.out.printf("Echo whole_matrix after reduced duplex row filling (%2d)\n", row1);
-            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[row1]);
-            System.out.printf("Echo whole_matrix after reduced duplex row filling (%2d)\n", row0);
-            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[row0]);
+            prev0 = row0;
+            prev1 = row1;
 
-            return 42L;
+            row1 = (row1 + step) & (window - 1);
+
+            if (row1 == 0) {
+                window *= 2;
+                step = sqrt + gap;
+                gap = -gap;
+
+                if (gap == -1) {
+                    sqrt *= 2;
+                }
+            }
+        }
+
+        System.out.println("Echo sponge.state before wandering phase:");
+        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
+
+        // Wandering phase:
+        // Wandering phase: visitation loop
+        for (int i = 0; i != tcost * mcost; ++i) {
+//            final long st0 = Sponge.flip_long(sponge.state[0]);
+//            final long st2 = Sponge.flip_long(sponge.state[2]);
+//
+//            System.out.printf("nRows: %16X\n", mcost);
+//            System.out.printf("sponge.state[0]: %16X %20d\n", st0, st0);
+//            System.out.printf("sponge.state[2]: %16X %20d\n", st2, st2);
+
+            row0 = (int) Long.remainderUnsigned(Sponge.flip_long(sponge.state[0]), mcost);
+            row1 = (int) Long.remainderUnsigned(Sponge.flip_long(sponge.state[2]), mcost);
+
+//            System.out.printf("Wandering phase picks row0: %16X\n", row0);
+//            System.out.printf("Wandering phase picks row1: %16X\n", row1);
+//            System.out.printf("Wandering phase picks prev0: %16X\n", prev0);
+//            System.out.printf("Wandering phase picks prev1: %16X\n", prev1);
+
+            sponge.reduced_duplex_row_wandering(
+                    whole_matrix,
+                    memory_matrix[row0],
+                    memory_matrix[row1],
+                    memory_matrix[prev0],
+                    memory_matrix[prev1]
+            );
+
+            System.out.println("Echo reduced duplex row wandering");
+            System.out.printf("whole_matrix for row0: (%16X)\n", row0);
+            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[row0]);
+            System.out.printf("whole_matrix for row1: (%16X)\n", row1);
+            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[row1]);
+            System.out.printf("whole_matrix for prev0: (%16X)\n", prev0);
+            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev0]);
+            System.out.printf("whole_matrix for prev1: (%16X)\n", prev1);
+            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev1]);
+
+            prev0 = row0;
+            prev1 = row1;
         }
 
         return 42L;
