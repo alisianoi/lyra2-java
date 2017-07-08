@@ -8,6 +8,16 @@ public class Go {
         dst[offset + 3] = (byte) (src >>> 24);
     }
 
+    public static byte[] pack_bytes(long x) {
+        byte[] bytes = new byte[8];
+
+        for (int i = 0; i != 8; ++i) {
+            bytes[i] = (byte) (x >>> (56 - 8 * i));
+        }
+
+        return bytes;
+    }
+
     public static byte[] pack_bytes(long[] longs) {
         byte[] bytes = new byte[8 * longs.length];
 
