@@ -1,13 +1,20 @@
 package at.ac.tuwien.lyra2;
 
+/**
+ * Pack bytes as longs and longs as bytes.
+ *
+ * The class name is lowercase because its methods are static.
+ */
 public class pack {
-    // TODO: maybe just provide an example
     /**
      * Pack a single long into an array of bytes.
+     * <p>
+     * Most significant bits go into {@literal 0th} place.
+     * <p>
+     * Example:
+     * {@code 0xDEADBEEFL} becomes {@code [0x00, 0x00, 0x00, 0x00, 0xDE, 0xAD, 0xBE, 0xEF]}
      *
-     * Most significant bits go into 0th place.
-     *
-     * @param x -- a long to pack
+     * @param x a long to pack
      * @return an array of resulting bytes
      */
     public static byte[] bytes(long x) {
@@ -20,14 +27,16 @@ public class pack {
         return bytes;
     }
 
-    // TODO: maybe just provide an example
     // TODO: rewrite using pack.bytes(long x)
     /**
      * Pack an array of longs into an array of bytes.
-     *
+     * <p>
      * Most significant bits have a lower array index.
+     * <p>
+     * Example:
+     * {@code [0xDEADBEEFL]} becomes {@code [0x00, 0x00, 0x00, 0x00, 0xDE, 0xAD, 0xBE, 0xEF]}
      *
-     * @param longs -- an array of longs to pack
+     * @param longs an array of longs to pack
      * @return an array of resulting bytes
      */
     public static byte[] bytes(long[] longs) {
@@ -42,14 +51,18 @@ public class pack {
         return bytes;
     }
 
-    // TODO: just provide an example
     /**
      * Pack an array of bytes into an array of longs.
+     * <p>
+     * A lower array index means a more significant byte. If the number of
+     * provided bytes is not a multiple of 8 then the last long will have its
+     * least significant bits padded with zeroes.
+     * <p>
+     * Example:
+     * {@code [0xDE, 0xAD, 0xBE, 0xEF]} becomes {@code [0xDEADBEEF00000000L]}
      *
-     * A lower array index means a more significant byte. If the number of provided bytes is not a multiple of 8 then the last long will have its least significant bits padded with zeroes.
-     *
-     * @param bytes -- an array of bytes to pack
-     * @return an array of resulting longs
+     * @param bytes an array of bytes to pack
+     * @return      an array of resulting longs
      */
     public static long[] longs(byte[] bytes) {
         int div = bytes.length / 8;
@@ -74,12 +87,12 @@ public class pack {
             long l = 0;
 
             for (int i = 0; i != mod - 1; ++i) {
-                l |= bytes[div * 8 + i];
+                l |= (bytes[div * 8 + i] & 0x00000000000000FFL);
 
                 l <<= 8;
-            } l |= bytes[div * 8 + mod];
+            } l |= (bytes[div * 8 + mod - 1] & 0x00000000000000FFL);
 
-            l <<= (8 * (7 - mod));
+            l <<= (8 * (8 - mod));
 
             longs[div] = l;
         }
