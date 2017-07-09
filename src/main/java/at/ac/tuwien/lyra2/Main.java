@@ -4,18 +4,23 @@ import com.beust.jcommander.JCommander;
 
 public class Main {
     public static void main(String[] argv) {
-        Parameters params = new Parameters();
-        JCommander jc = JCommander.newBuilder().addObject(params).build();
+        Parameters args = new Parameters();
+        JCommander jc = JCommander.newBuilder().addObject(args).build();
 
         jc.parse(argv);
-        if (params.help) {
+        if (args.help) {
             jc.usage();
             return;
         }
 
-        byte[] hash = new byte[params.klen];
-        byte[] pass = params.pass.getBytes();
-        byte[] salt = params.salt.getBytes();
+        LyraParams params = new LyraParams(
+                args.klen, args.tcost, args.mcost,
+                args.rounds, args.NCOLS, args.BLOCK_LEN_INT64
+        );
+
+        byte[] hash = new byte[args.klen];
+        byte[] pass = args.pass.getBytes();
+        byte[] salt = args.salt.getBytes();
 
         // TODO: you should overwrite the params.pass now
 

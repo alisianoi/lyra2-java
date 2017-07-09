@@ -10,11 +10,11 @@ public class Sponge {
 
     public long[] state = new long[16];
 
-    public final int rounds;
-    public final int NCOLS;
+    public final int ROUNDS;
+    public final int N_COLS;
     public final int BLOCK_LEN_INT64;
 
-    public Sponge(Parameters params) {
+    public Sponge(LyraParams params) {
         for (int i = 0; i != 8; ++i) {
             state[i] = 0;
         }
@@ -23,14 +23,14 @@ public class Sponge {
             state[i + 8] = mem.flip(blake2b_IV[i]);
         }
 
-        this.rounds = params.rounds;
+        this.ROUNDS = params.ROUNDS;
 
-        this.NCOLS = params.NCOLS;
+        this.N_COLS = params.N_COLS;
         this.BLOCK_LEN_INT64 = params.BLOCK_LEN_INT64;
     }
 
     /**
-     * @param src -- a hard-coded 512 bits (Blake2b and BlaMka restriction)
+     * @param src a hard-coded 512 bits (Blake2b and BlaMka restriction)
      */
     public void absorb_block_blake2b_safe(final long[] src, final int offset) {
         for (int i = 0; i < 8; ++i) {
@@ -173,7 +173,7 @@ public class Sponge {
     }
 
     public void reduced_sponge_lyra() {
-        for (int round = 0; round != this.rounds; ++round) {
+        for (int round = 0; round != this.ROUNDS; ++round) {
             round_lyra(round);
         }
     }
@@ -182,9 +182,9 @@ public class Sponge {
      * TODO: below, either word or i could be optimized out
      */
     public void reduced_squeeze_row0(long[] out, int offset) {
-        int word = (NCOLS - 1) * BLOCK_LEN_INT64;
+        int word = (N_COLS - 1) * BLOCK_LEN_INT64;
 
-        for (int i = 0; i != NCOLS; ++i) {
+        for (int i = 0; i != N_COLS; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 out[offset + word + j] = state[j];
             }
@@ -197,9 +197,9 @@ public class Sponge {
 
     public void reduced_duplex_row1_and_row2(long[] out, int offset1, int offset2) {
         int word1 = 0;
-        int word2 = (NCOLS - 1) * BLOCK_LEN_INT64;
+        int word2 = (N_COLS - 1) * BLOCK_LEN_INT64;
 
-        for (int i = 0; i != NCOLS; ++i) {
+        for (int i = 0; i != N_COLS; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 state[j] ^= out[offset1 + word1 + j];
             }
@@ -230,9 +230,9 @@ public class Sponge {
         int word0 = offset0;
         int word1 = offset1;
         int word2 = offset2;
-        int word3 = offset3 + (NCOLS - 1) * BLOCK_LEN_INT64;
+        int word3 = offset3 + (N_COLS - 1) * BLOCK_LEN_INT64;
 
-        for (int i = 0; i != NCOLS; ++i) {
+        for (int i = 0; i != N_COLS; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 state[j] ^= mem.flip(
                         mem.flip(out[word0 + j]) + mem.flip(out[word1 + j]) + mem.flip(out[word2 + j])
@@ -270,18 +270,18 @@ public class Sponge {
         int word0 = offset0;
         int word1 = offset1;
 
-        for (int i = 0; i != NCOLS; ++i) {
+        for (int i = 0; i != N_COLS; ++i) {
 
 //            final int st4 = (int) mem.flip(state[4]);
 //            final int st6 = (int) mem.flip(state[6]);
 
-            final int rndcol0 = Math.floorMod((int) mem.flip(state[4]), NCOLS) * BLOCK_LEN_INT64;
-            final int rndcol1 = Math.floorMod((int) mem.flip(state[6]), NCOLS) * BLOCK_LEN_INT64;
+            final int rndcol0 = Math.floorMod((int) mem.flip(state[4]), N_COLS) * BLOCK_LEN_INT64;
+            final int rndcol1 = Math.floorMod((int) mem.flip(state[6]), N_COLS) * BLOCK_LEN_INT64;
 
 //            System.out.printf("state[4]: %16X\n", st4);
 //            System.out.printf("state[6]: %16X\n", st6);
-//            System.out.printf("state[4] %% NCOLS: %16X\n", Math.floorMod(st4, NCOLS));
-//            System.out.printf("state[6] %% NCOLS: %16X\n", Math.floorMod(st6, NCOLS));
+//            System.out.printf("state[4] %% N_COLS: %16X\n", Math.floorMod(st4, N_COLS));
+//            System.out.printf("state[6] %% N_COLS: %16X\n", Math.floorMod(st6, N_COLS));
 //            System.out.printf("rndcol0: %16X\n", rndcol0);
 //            System.out.printf("rndcol1: %16X\n", rndcol1);
 

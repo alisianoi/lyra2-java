@@ -37,7 +37,7 @@ public class Parameters {
     public int mcost;
 
     @Parameter(
-            names={"--NCOLS"},
+            names={"--N_COLS"},
             description="number of columns"
     )
     public int NCOLS = 256;
@@ -49,8 +49,8 @@ public class Parameters {
     public int BLOCK_LEN_INT64 = 12;
 
     @Parameter(
-            names={"--rounds"},
-            description="rounds for reduced sponge"
+            names={"--ROUNDS"},
+            description="ROUNDS for reduced sponge"
     )
     public int rounds = 1;
 
