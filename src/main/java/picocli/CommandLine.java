@@ -74,7 +74,7 @@ import static picocli.CommandLine.Help.Column.Overflow.*;
  * &#064;Command(header = "Encrypt FILE(s), or standard input, to standard output or to the output file.")
  * public class Encrypt {
  *
- *     &#064;Parameters(type = File.class, description = "Any number of input files")
+ *     &#064;ConsoleArgs(type = File.class, description = "Any number of input files")
  *     private List&lt;File&gt; files = new ArrayList&lt;File&gt;();
  *
  *     &#064;Option(names = { "-o", "--out" }, description = "Output file (default: print to console)")
@@ -130,7 +130,7 @@ public class CommandLine {
     /**
      * Constructs a new {@code CommandLine} interpreter with the specified annotated object.
      * When the {@link #parse(String...)} method is called, fields of the specified object that are annotated
-     * with {@code @Option} or {@code @Parameters} will be initialized based on command line arguments.
+     * with {@code @Option} or {@code @ConsoleArgs} will be initialized based on command line arguments.
      * @param command the object to initialize from the command line arguments
      * @throws IllegalArgumentException if the specified command object does not have a {@link Command}, {@link Option} or {@link Parameters} annotation
      */
@@ -265,7 +265,7 @@ public class CommandLine {
      * </pre>
      *
      * @param command the object to initialize. This object contains fields annotated with
-     *          {@code @Option} or {@code @Parameters}.
+     *          {@code @Option} or {@code @ConsoleArgs}.
      * @param args the command line arguments to parse
      * @param <T> the type of the annotated object
      * @return the specified annotated object
@@ -521,7 +521,7 @@ public class CommandLine {
      * <pre>import static picocli.CommandLine.*;
      *
      * public class MyClass {
-     *     &#064;Parameters(type = File.class, description = "Any number of input files")
+     *     &#064;ConsoleArgs(type = File.class, description = "Any number of input files")
      *     private List&lt;File&gt; files = new ArrayList&lt;File&gt;();
      *
      *     &#064;Option(names = { "-o", "--out" }, description = "Output file (default: print to console)")
@@ -538,7 +538,7 @@ public class CommandLine {
      * }
      * </pre>
      * <p>
-     * A field cannot be annotated with both {@code @Parameters} and {@code @Option} or a
+     * A field cannot be annotated with both {@code @ConsoleArgs} and {@code @Option} or a
      * {@code ParameterException} is thrown.
      * </p>
      */
@@ -712,7 +712,7 @@ public class CommandLine {
     }
     /**
      * <p>
-     * Fields annotated with {@code @Parameters} will be initialized with positional parameters. By specifying the
+     * Fields annotated with {@code @ConsoleArgs} will be initialized with positional parameters. By specifying the
      * {@link #index()} attribute you can pick which (or what range) of the positional parameters to apply. If no index
      * is specified, the field will get all positional parameters (so it should be an array or a collection).
      * </p><p>
@@ -725,14 +725,14 @@ public class CommandLine {
      * <pre>import static picocli.CommandLine.*;
      *
      * public class MyCalcParameters {
-     *     &#064;Parameters(type = BigDecimal.class, description = "Any number of input numbers")
+     *     &#064;ConsoleArgs(type = BigDecimal.class, description = "Any number of input numbers")
      *     private List&lt;BigDecimal&gt; files = new ArrayList&lt;BigDecimal&gt;();
      *
      *     &#064;Option(names = { "-h", "--help", "-?", "-help"}, help = true, description = "Display this help and exit")
      *     private boolean help;
      * }
      * </pre><p>
-     * A field cannot be annotated with both {@code @Parameters} and {@code @Option} or a {@code ParameterException}
+     * A field cannot be annotated with both {@code @ConsoleArgs} and {@code @Option} or a {@code ParameterException}
      * is thrown.</p>
      */
     @Retention(RetentionPolicy.RUNTIME)
@@ -764,7 +764,7 @@ public class CommandLine {
          * Specify a {@code paramLabel} for the parameter to be used in the usage help message. If omitted,
          * picocli uses the field name in fish brackets ({@code '<'} and {@code '>'}) by default. Example:
          * <pre>class Example {
-         *     &#064;Parameters(paramLabel="FILE", description="path of the input FILE(s)")
+         *     &#064;ConsoleArgs(paramLabel="FILE", description="path of the input FILE(s)")
          *     private File[] inputFiles;
          * }</pre>
          * <p>By default, the above gives a usage help message like the following:</p><pre>
@@ -815,7 +815,7 @@ public class CommandLine {
      *        description = "Encrypt FILE(s), or standard input, to standard output or to the output file.",
      *        footer      = "Copyright (c) 2017")
      * public class Encrypt {
-     *     &#064;Parameters(paramLabel = "FILE", type = File.class, description = "Any number of input files")
+     *     &#064;ConsoleArgs(paramLabel = "FILE", type = File.class, description = "Any number of input files")
      *     private List&lt;File&gt; files     = new ArrayList&lt;File&gt;();
      *
      *     &#064;Option(names = { "-o", "--out" }, description = "Output file (default: print to console)")
@@ -935,7 +935,7 @@ public class CommandLine {
     /**
      * <p>
      * When parsing command line arguments and initializing
-     * fields annotated with {@link Option @Option} or {@link Parameters @Parameters},
+     * fields annotated with {@link Option @Option} or {@link Parameters @ConsoleArgs},
      * String values can be converted to any type for which a {@code ITypeConverter} is registered.
      * </p><p>
      * This interface defines the contract for classes that know how to convert a String into some domain object.
@@ -1014,16 +1014,16 @@ public class CommandLine {
         }
         /** Returns a new {@code Range} based on the {@link Parameters#arity()} annotation on the specified field,
          * or the field type's default arity if no arity was specified.
-         * @param field the field whose Parameters annotation to inspect
-         * @return a new {@code Range} based on the Parameters arity annotation on the specified field */
+         * @param field the field whose ConsoleArgs annotation to inspect
+         * @return a new {@code Range} based on the ConsoleArgs arity annotation on the specified field */
         public static Range parameterArity(Field field) {
             return field.isAnnotationPresent(Parameters.class)
                     ? adjustForType(Range.valueOf(field.getAnnotation(Parameters.class).arity()), field)
                     : new Range(0, 0, false, true, "0");
         }
         /** Returns a new {@code Range} based on the {@link Parameters#index()} annotation on the specified field.
-         * @param field the field whose Parameters annotation to inspect
-         * @return a new {@code Range} based on the Parameters index annotation on the specified field */
+         * @param field the field whose ConsoleArgs annotation to inspect
+         * @return a new {@code Range} based on the ConsoleArgs index annotation on the specified field */
         public static Range parameterIndex(Field field) {
             return field.isAnnotationPresent(Parameters.class)
                     ? Range.valueOf(field.getAnnotation(Parameters.class).index())
@@ -1132,7 +1132,7 @@ public class CommandLine {
             }
             if (field.isAnnotationPresent(Parameters.class)) {
                 if (field.isAnnotationPresent(Option.class)) {
-                    throw new ParameterException("A field can be either @Option or @Parameters, but '"
+                    throw new ParameterException("A field can be either @Option or @ConsoleArgs, but '"
                             + field.getName() + "' is both.");
                 }
                 positionalParametersFields.add(field);
@@ -1224,7 +1224,7 @@ public class CommandLine {
 
             if (positionalParametersFields.isEmpty() && optionName2Field.isEmpty() && !hasCommandAnnotation) {
                 throw new IllegalArgumentException(command + " (" + command.getClass() +
-                        ") is not a command: it has no @Command, @Option or @Parameters annotations");
+                        ") is not a command: it has no @Command, @Option or @ConsoleArgs annotations");
             }
         }
 
@@ -1674,7 +1674,7 @@ public class CommandLine {
             } else if (field.isAnnotationPresent(Option.class)) {
                 return field.getAnnotation(Option.class).type();
             }
-            throw new IllegalStateException(field + " has neither @Parameters nor @Option annotation");
+            throw new IllegalStateException(field + " has neither @ConsoleArgs nor @Option annotation");
         }
 
         private void updateHelpRequested(Field field) {
@@ -2426,7 +2426,7 @@ public class CommandLine {
             return new MinimalOptionRenderer();
         }
 
-        /** Returns a new default ParameterRenderer which converts {@link Parameters Parameters} to four columns of
+        /** Returns a new default ParameterRenderer which converts {@link Parameters ConsoleArgs} to four columns of
          * text to match the default {@linkplain TextTable TextTable} column layout. The first row of values looks like this:
          * <ol>
          * <li>empty string </li>
@@ -2444,7 +2444,7 @@ public class CommandLine {
             result.requiredMarker = String.valueOf(requiredOptionMarker);
             return result;
         }
-        /** Returns a new minimal ParameterRenderer which converts {@link Parameters Parameters} to a single row with
+        /** Returns a new minimal ParameterRenderer which converts {@link Parameters ConsoleArgs} to a single row with
          * two columns of text: an option name and a description. If multiple descriptions exist, the first value is used.
          * @return a new minimal ParameterRenderer */
         public static IParameterRenderer createMinimalParameterRenderer() {
@@ -2592,7 +2592,7 @@ public class CommandLine {
                                         scheme.ansi().new Text(option.description().length == 0 ? "" : option.description()[0]) }};
             }
         }
-        /** The MinimalParameterRenderer converts {@link Parameters Parameters} to a single row with two columns of
+        /** The MinimalParameterRenderer converts {@link Parameters ConsoleArgs} to a single row with two columns of
          * text: the parameters label and a description. If multiple description lines exist, the first value is used. */
         static class MinimalParameterRenderer implements IParameterRenderer {
             public Text[][] render(Parameters param, Field field, IParamLabelRenderer parameterLabelRenderer, ColorScheme scheme) {
@@ -2600,13 +2600,13 @@ public class CommandLine {
                         scheme.ansi().new Text(param.description().length == 0 ? "" : param.description()[0]) }};
             }
         }
-        /** When customizing online help for {@link Parameters Parameters} details, a custom {@code IParameterRenderer}
-         * can be used to create textual representation of a Parameters field in a tabular format: one or more rows,
+        /** When customizing online help for {@link Parameters ConsoleArgs} details, a custom {@code IParameterRenderer}
+         * can be used to create textual representation of a ConsoleArgs field in a tabular format: one or more rows,
          * each containing one or more columns. The {@link Layout Layout} is responsible for placing these text
          * values in the {@link TextTable TextTable}. */
         public interface IParameterRenderer {
             /**
-             * Returns a text representation of the specified Parameters and the Field that captures the parameter values.
+             * Returns a text representation of the specified ConsoleArgs and the Field that captures the parameter values.
              * @param parameters the command line parameters to show online usage help for
              * @param field the field that will hold the value for the command line parameters
              * @param parameterLabelRenderer responsible for rendering parameter labels to text
@@ -2615,7 +2615,7 @@ public class CommandLine {
              */
             Text[][] render(Parameters parameters, Field field, IParamLabelRenderer parameterLabelRenderer, ColorScheme scheme);
         }
-        /** The DefaultParameterRenderer converts {@link Parameters Parameters} to five columns of text to match the
+        /** The DefaultParameterRenderer converts {@link Parameters ConsoleArgs} to five columns of text to match the
          * default {@linkplain TextTable TextTable} column layout. The first row of values looks like this:
          * <ol>
          * <li>the required option marker (if the parameter's arity is to have at least one value)</li>
@@ -2748,7 +2748,7 @@ public class CommandLine {
              * specified option renderer and the specified parameter renderer.
              * @param colorScheme the color scheme to use for common, auto-generated parts of the usage help message
              * @param optionRenderer the object responsible for rendering Options to Text
-             * @param parameterRenderer the object responsible for rendering Parameters to Text
+             * @param parameterRenderer the object responsible for rendering ConsoleArgs to Text
              * @param textTable the TextTable to lay out parts of the usage help message in tabular format */
             public Layout(ColorScheme colorScheme, TextTable textTable, IOptionRenderer optionRenderer, IParameterRenderer parameterRenderer) {
                 this.colorScheme       = Assert.notNull(colorScheme, "colorScheme");
@@ -2760,8 +2760,8 @@ public class CommandLine {
              * Copies the specified text values into the correct cells in the {@link TextTable}. This implementation
              * delegates to {@link TextTable#addRowValues(CommandLine.Help.Ansi.Text...)} for each row of values.
              * <p>Subclasses may override.</p>
-             * @param field the field annotated with the specified Option or Parameters
-             * @param cellValues the text values representing the Option/Parameters, to be displayed in tabular form
+             * @param field the field annotated with the specified Option or ConsoleArgs
+             * @param cellValues the text values representing the Option/ConsoleArgs, to be displayed in tabular form
              */
             public void layout(Field field, Text[][] cellValues) {
                 for (Text[] oneRow : cellValues) {
@@ -2791,7 +2791,7 @@ public class CommandLine {
                 Text[][] values = optionRenderer.render(option, field, paramLabelRenderer, colorScheme);
                 layout(field, values);
             }
-            /** Calls {@link #addPositionalParameter(Field, CommandLine.Help.IParamLabelRenderer)} for all non-hidden Parameters in the list.
+            /** Calls {@link #addPositionalParameter(Field, CommandLine.Help.IParamLabelRenderer)} for all non-hidden ConsoleArgs in the list.
              * @param fields fields annotated with {@link Parameters} to add usage descriptions for
              * @param paramLabelRenderer knows how to render option parameters */
             public void addPositionalParameters(List<Field> fields, IParamLabelRenderer paramLabelRenderer) {
@@ -2806,7 +2806,7 @@ public class CommandLine {
              * Delegates to the {@link #parameterRenderer parameter renderer} of this layout
              * to obtain text values for the specified {@link Parameters}, and then calls
              * {@link #layout(Field, CommandLine.Help.Ansi.Text[][])} to write these text values into the correct cells in the TextTable.
-             * @param field the field annotated with the specified Parameters
+             * @param field the field annotated with the specified ConsoleArgs
              * @param paramLabelRenderer knows how to render option parameters
              */
             public void addPositionalParameter(Field field, IParamLabelRenderer paramLabelRenderer) {

@@ -1,21 +1,20 @@
 package at.ac.tuwien.lyra2;
 
-import com.beust.jcommander.JCommander;
+import picocli.CommandLine;
 
 public class Main {
     public static void main(String[] argv) {
-        Parameters args = new Parameters();
-        JCommander jc = JCommander.newBuilder().addObject(args).build();
+        ConsoleArgs args = CommandLine.populateCommand(new ConsoleArgs(), argv);
 
-        jc.parse(argv);
         if (args.help) {
-            jc.usage();
+            CommandLine.usage(new ConsoleArgs(), System.err);
+
             return;
         }
 
         LyraParams params = new LyraParams(
-                args.klen, args.tcost, args.mcost,
-                args.rounds, args.NCOLS, args.BLOCK_LEN_INT64
+                args.klen, args.t_cost, args.m_cost,
+                args.ROUNDS, args.N_COLS, args.BLOCK_LEN_INT64
         );
 
         byte[] hash = new byte[args.klen];
