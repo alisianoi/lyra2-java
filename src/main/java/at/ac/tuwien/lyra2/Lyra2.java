@@ -192,7 +192,7 @@ public class Lyra2 {
         System.out.println("Echo sponge state after absorb column");
         Go.dump_bytes(sponge.state, 128);
 
-        sponge.squeeze(dst, sponge.state, dstlen);
+        sponge.squeeze(dst, dstlen);
 
         return 0L;
     }

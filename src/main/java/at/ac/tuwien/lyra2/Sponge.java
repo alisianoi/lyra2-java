@@ -65,15 +65,17 @@ public class Sponge {
         sponge_lyra();
     }
 
-    public void squeeze(byte[] dst, final long[] src, final int len) {
+    // TODO: at least two final loops could be optimized
+    public void squeeze(byte[] dst, final int len) {
         final int BLOCK_LEN_BYTES = 8 * BLOCK_LEN_INT64; // 8 * 12
 
         final int div = len / BLOCK_LEN_BYTES; // complete blocks, 96 bytes each
         final int mod = len % BLOCK_LEN_BYTES; // incomplete block, [0..96] bytes
 
+        // Assume block size is a multiple of 8 bytes
         for (int i = 0; i != div; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                final byte[] bytes = Go.pack_bytes(src[i * BLOCK_LEN_INT64 + j]);
+                byte[] bytes = Go.pack_bytes(state[j]);
 
                 for (int k = 0; k != 8; ++k) {
                     dst[i * BLOCK_LEN_BYTES + 8 * j + k] = bytes[k];
@@ -87,18 +89,18 @@ public class Sponge {
         final int mod8 = mod % 8;
 
         for (int i = 0; i != div8; ++i) {
-            final byte[] bytes = Go.pack_bytes(src[div * BLOCK_LEN_INT64 + i]);
+            final byte[] bytes = Go.pack_bytes(state[i]);
 
             for (int j = 0; j != 8; ++j) {
                 dst[div * BLOCK_LEN_BYTES + 8 * i + j] = bytes[j];
             }
         }
 
-        if (mod8 != 0) {
-            final byte[] bytes = Go.pack_bytes(src[div * BLOCK_LEN_INT64 + 8 * div8]);
+        for (int i = 0; i != mod8; ++i) {
+            final byte[] bytes = Go.pack_bytes(state[div8]);
 
-            for (int i = 0; i != mod8; ++i) {
-                dst[div * BLOCK_LEN_BYTES + 8 * div8 + i] = bytes[i];
+            for (int j = 0; j != mod8; ++j) {
+                dst[div * BLOCK_LEN_BYTES + 8 * div8 + j] = bytes[j];
             }
         }
     }
