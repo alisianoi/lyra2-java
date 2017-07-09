@@ -60,31 +60,31 @@ public class Lyra2 {
             buffer0[ii] = salt[jj];
         }
 
-        // NOTE: the order of Go.memcpy1 calls matters
-        Go.memcpy1(buffer0, ii, dstlen); ii += 4;
-        Go.memcpy1(buffer0, ii, srclen); ii += 4;
-        Go.memcpy1(buffer0, ii, sltlen); ii += 4;
-        Go.memcpy1(buffer0, ii, tcost); ii += 4;
-        Go.memcpy1(buffer0, ii, mcost); ii += 4;
-        Go.memcpy1(buffer0, ii, NCOLS); ii += 4;
+        // NOTE: the order of mem.copy calls matters
+        mem.copy(buffer0, ii, dstlen); ii += 4;
+        mem.copy(buffer0, ii, srclen); ii += 4;
+        mem.copy(buffer0, ii, sltlen); ii += 4;
+        mem.copy(buffer0, ii, tcost); ii += 4;
+        mem.copy(buffer0, ii, mcost); ii += 4;
+        mem.copy(buffer0, ii, NCOLS); ii += 4;
 
         buffer0[ii] = (byte) 0x80;
         buffer0[nBlocksInput * BLOCK_LEN_BLAKE2_SAFE_BYTES - 1] |= (byte) 0x01;
 
-        final long[] buffer1 = Go.pack_longs(buffer0);
+        final long[] buffer1 = pack.longs(buffer0);
 
         for (int jj = 0; jj != buffer1.length; ++jj) {
             whole_matrix[jj] = buffer1[jj];
         }
 
-        System.out.println("Echo whole_matrix after initial copy:");
-        Go.dump_bytes(whole_matrix, buffer0.length);
+        System.out.println("echo whole_matrix after initial copy:");
+        echo.bytes(whole_matrix, buffer0.length);
         // Wrap-up phase:
 
         Sponge sponge = new Sponge(params);
 
-        System.out.println("Echo sponge.state after sponge init:");
-        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
+        System.out.println("echo sponge.state after sponge init:");
+        echo.bytes(sponge.state, 8 * sponge.state.length);
 
         for (int jj = 0, offset = 0; jj < nBlocksInput; ++jj) {
             sponge.absorb_block_blake2b_safe(whole_matrix, offset);
@@ -93,29 +93,29 @@ public class Lyra2 {
         }
 
         // Setup phase:
-        System.out.println("Echo sponge.state after first absorb:");
-        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
+        System.out.println("echo sponge.state after first absorb:");
+        echo.bytes(sponge.state, 8 * sponge.state.length);
 
         sponge.reduced_squeeze_row0(whole_matrix, memory_matrix[0]);
 
-        System.out.println("Echo sponge.state after reduced squeeze row0:");
-        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
-        System.out.println("Echo whole_matrix after reduced squeeze row0:");
-        Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[0]);
+        System.out.println("echo sponge.state after reduced squeeze row0:");
+        echo.bytes(sponge.state, 8 * sponge.state.length);
+        System.out.println("echo whole_matrix after reduced squeeze row0:");
+        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[0]);
 
         sponge.reduced_duplex_row1_and_row2(whole_matrix, memory_matrix[0], memory_matrix[1]);
 
-        System.out.println("Echo sponge.state after reduced duplex row1 and row2 (1):");
-        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
-        System.out.println("Echo whole_matrix after reduced duplex row1 and row2 (1):");
-        Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[1]);
+        System.out.println("echo sponge.state after reduced duplex row1 and row2 (1):");
+        echo.bytes(sponge.state, 8 * sponge.state.length);
+        System.out.println("echo whole_matrix after reduced duplex row1 and row2 (1):");
+        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[1]);
 
         sponge.reduced_duplex_row1_and_row2(whole_matrix, memory_matrix[1], memory_matrix[2]);
 
-        System.out.println("Echo sponge.state after reduced duplex row1 and row2 (2):");
-        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
-        System.out.println("Echo whole_matrix after reduced duplex row1 and row2 (2):");
-        Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[2]);
+        System.out.println("echo sponge.state after reduced duplex row1 and row2 (2):");
+        echo.bytes(sponge.state, 8 * sponge.state.length);
+        System.out.println("echo whole_matrix after reduced duplex row1 and row2 (2):");
+        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[2]);
 
         // Setup phase: filling loop:
         for (row0 = 3; row0 != mcost; ++row0) {
@@ -143,8 +143,8 @@ public class Lyra2 {
             }
         }
 
-        System.out.println("Echo sponge.state before wandering phase:");
-        Go.dump_bytes(sponge.state, 8 * sponge.state.length);
+        System.out.println("echo sponge.state before wandering phase:");
+        echo.bytes(sponge.state, 8 * sponge.state.length);
 
         // Wandering phase:
         // Wandering phase: visitation loop
@@ -172,15 +172,15 @@ public class Lyra2 {
                     memory_matrix[prev1]
             );
 
-            System.out.println("Echo reduced duplex row wandering");
+            System.out.println("echo reduced duplex row wandering");
             System.out.printf("whole_matrix for row0: (%16X)\n", row0);
-            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[row0]);
+            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[row0]);
             System.out.printf("whole_matrix for row1: (%16X)\n", row1);
-            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[row1]);
+            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[row1]);
             System.out.printf("whole_matrix for prev0: (%16X)\n", prev0);
-            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev0]);
+            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev0]);
             System.out.printf("whole_matrix for prev1: (%16X)\n", prev1);
-            Go.dump_bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev1]);
+            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev1]);
 
             prev0 = row0;
             prev1 = row1;
@@ -189,8 +189,8 @@ public class Lyra2 {
         // Wrap-up phase:
         sponge.absorb_column(whole_matrix, memory_matrix[row0]);
 
-        System.out.println("Echo sponge state after absorb column");
-        Go.dump_bytes(sponge.state, 128);
+        System.out.println("echo sponge state after absorb column");
+        echo.bytes(sponge.state, 128);
 
         sponge.squeeze(dst, dstlen);
 

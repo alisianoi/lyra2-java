@@ -75,7 +75,7 @@ public class Sponge {
         // Assume block size is a multiple of 8 bytes
         for (int i = 0; i != div; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                byte[] bytes = Go.pack_bytes(state[j]);
+                byte[] bytes = pack.bytes(state[j]);
 
                 for (int k = 0; k != 8; ++k) {
                     dst[i * BLOCK_LEN_BYTES + 8 * j + k] = bytes[k];
@@ -89,7 +89,7 @@ public class Sponge {
         final int mod8 = mod % 8;
 
         for (int i = 0; i != div8; ++i) {
-            final byte[] bytes = Go.pack_bytes(state[i]);
+            final byte[] bytes = pack.bytes(state[i]);
 
             for (int j = 0; j != 8; ++j) {
                 dst[div * BLOCK_LEN_BYTES + 8 * i + j] = bytes[j];
@@ -97,7 +97,7 @@ public class Sponge {
         }
 
         for (int i = 0; i != mod8; ++i) {
-            final byte[] bytes = Go.pack_bytes(state[div8]);
+            final byte[] bytes = pack.bytes(state[div8]);
 
             for (int j = 0; j != mod8; ++j) {
                 dst[div * BLOCK_LEN_BYTES + 8 * div8 + j] = bytes[j];
@@ -168,7 +168,7 @@ public class Sponge {
 
 //        if (r == 0 && i < 3) {
 //            System.out.printf("G round: %02d step: %02d\n", r, i);
-//            Go.dump_bytes(state, 8 * state.length);
+//            mem.dump_bytes(state, 8 * state.length);
 //        }
     }
 
@@ -314,7 +314,7 @@ public class Sponge {
             }
 
 //            System.out.println("state after first loop:");
-//            Go.dump_bytes(state, 128);
+//            mem.dump_bytes(state, 128);
 
             reduced_sponge_lyra();
 
@@ -323,7 +323,7 @@ public class Sponge {
             }
 
 //            System.out.println("out[word0 + j] after xor");
-//            Go.dump_bytes(out, 128, 16, 8 * word0);
+//            mem.dump_bytes(out, 128, 16, 8 * word0);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 out[word1 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];

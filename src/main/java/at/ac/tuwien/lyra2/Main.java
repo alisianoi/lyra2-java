@@ -22,6 +22,6 @@ public class Main {
         Lyra2.phs(hash, pass, salt, params);
 
         System.out.println("Output:");
-        Go.dump_bytes(hash, hash.length);
+        echo.bytes(hash, hash.length);
     }
 }
