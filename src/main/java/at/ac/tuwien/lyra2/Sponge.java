@@ -14,30 +14,13 @@ public class Sponge {
     public final int NCOLS;
     public final int BLOCK_LEN_INT64;
 
-    /**
-     * Mimic byte flip that happens in c with memcpy
-     *
-     * @param x -- a Java long to be flipped
-     */
-    public static long flip_long(final long x) {
-        return    (x & 0x00000000000000FFL)  << 56
-                | (x & 0x000000000000FF00L)  << 40
-                | (x & 0x0000000000FF0000L)  << 24
-                | (x & 0x00000000FF000000L)  <<  8
-                | (x & 0x000000FF00000000L) >>>  8
-                | (x & 0x0000FF0000000000L) >>> 24
-                | (x & 0x00FF000000000000L) >>> 40
-                | (x & 0xFF00000000000000L) >>> 56
-                ;
-    }
-
     public Sponge(Parameters params) {
         for (int i = 0; i != 8; ++i) {
             state[i] = 0;
         }
 
         for (int i = 0; i != 8; ++i) {
-            state[i + 8] = flip_long(blake2b_IV[i]);
+            state[i + 8] = mem.flip(blake2b_IV[i]);
         }
 
         this.rounds = params.rounds;
@@ -111,60 +94,60 @@ public class Sponge {
 
     public void G(final int r, final int i, final int a, final int b, final int c, final int d) {
 //        if (r == 0 && i == 0) {
-//            final long xa = flip_long(state[a]);
-//            final long xb = flip_long(state[b]);
+//            final long xa = mem.flip(state[a]);
+//            final long xb = mem.flip(state[b]);
 //            System.out.printf("%16X + %16X = %16X\n", xa, xb, xa + xb);
 //        }
-        state[a] = flip_long(flip_long(state[a]) + flip_long(state[b]));
+        state[a] = mem.flip(mem.flip(state[a]) + mem.flip(state[b]));
 
 //        if (r == 0 && i == 0) {
-//            final long xd = flip_long(state[d]);
-//            final long xa = flip_long(state[a]);
+//            final long xd = mem.flip(state[d]);
+//            final long xa = mem.flip(state[a]);
 //            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
 //        }
-        state[d] = flip_long(rotr64(flip_long(state[d]) ^ flip_long(state[a]), 32));
+        state[d] = mem.flip(rotr64(mem.flip(state[d]) ^ mem.flip(state[a]), 32));
 
 //        if (r == 0 && i == 0) {
-//            final long xc = flip_long(state[c]);
-//            final long xd = flip_long(state[d]);
+//            final long xc = mem.flip(state[c]);
+//            final long xd = mem.flip(state[d]);
 //            System.out.printf("%16X + %16X = %16X\n", xc, xd, xc + xd);
 //        }
-        state[c] = flip_long(flip_long(state[c]) + flip_long(state[d]));
+        state[c] = mem.flip(mem.flip(state[c]) + mem.flip(state[d]));
 
 //        if (r == 0 && i == 0) {
-//            final long xb = flip_long(state[b]);
-//            final long xc = flip_long(state[c]);
+//            final long xb = mem.flip(state[b]);
+//            final long xc = mem.flip(state[c]);
 //            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
 //        }
-        state[b] = flip_long(rotr64(flip_long(state[b]) ^ flip_long(state[c]), 24));
+        state[b] = mem.flip(rotr64(mem.flip(state[b]) ^ mem.flip(state[c]), 24));
 
 //        if (r == 0 && i == 0) {
-//            final long xa = flip_long(state[a]);
-//            final long xb = flip_long(state[b]);
+//            final long xa = mem.flip(state[a]);
+//            final long xb = mem.flip(state[b]);
 //            System.out.printf("%16X + %16X = %16X\n", xa, xb, xa + xb);
 //        }
-        state[a] = flip_long(flip_long(state[a]) + flip_long(state[b]));
+        state[a] = mem.flip(mem.flip(state[a]) + mem.flip(state[b]));
 
 //        if (r == 0 && i == 0) {
-//            final long xd = flip_long(state[d]);
-//            final long xa = flip_long(state[a]);
+//            final long xd = mem.flip(state[d]);
+//            final long xa = mem.flip(state[a]);
 //            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
 //        }
-        state[d] = flip_long(rotr64(flip_long(state[d]) ^ flip_long(state[a]), 16));
+        state[d] = mem.flip(rotr64(mem.flip(state[d]) ^ mem.flip(state[a]), 16));
 
 //        if (r == 0 && i == 0) {
-//            final long xc = flip_long(state[c]);
-//            final long xd = flip_long(state[d]);
+//            final long xc = mem.flip(state[c]);
+//            final long xd = mem.flip(state[d]);
 //            System.out.printf("%16X + %16X = %16X\n", xc, xd, xc + xd);
 //        }
-        state[c] = flip_long(flip_long(state[c]) + flip_long(state[d]));
+        state[c] = mem.flip(mem.flip(state[c]) + mem.flip(state[d]));
 
 //        if (r == 0 && i == 0) {
-//            final long xb = flip_long(state[b]);
-//            final long xc = flip_long(state[c]);
+//            final long xb = mem.flip(state[b]);
+//            final long xc = mem.flip(state[c]);
 //            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
 //        }
-        state[b] = flip_long(rotr64(flip_long(state[b]) ^ flip_long(state[c]), 63));
+        state[b] = mem.flip(rotr64(mem.flip(state[b]) ^ mem.flip(state[c]), 63));
 
 //        if (r == 0 && i < 3) {
 //            System.out.printf("G round: %02d step: %02d\n", r, i);
@@ -251,8 +234,8 @@ public class Sponge {
 
         for (int i = 0; i != NCOLS; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                state[j] ^= flip_long(
-                        flip_long(out[word0 + j]) + flip_long(out[word1 + j]) + flip_long(out[word2 + j])
+                state[j] ^= mem.flip(
+                        mem.flip(out[word0 + j]) + mem.flip(out[word1 + j]) + mem.flip(out[word2 + j])
                 );
             }
 
@@ -289,11 +272,11 @@ public class Sponge {
 
         for (int i = 0; i != NCOLS; ++i) {
 
-//            final int st4 = (int) flip_long(state[4]);
-//            final int st6 = (int) flip_long(state[6]);
+//            final int st4 = (int) mem.flip(state[4]);
+//            final int st6 = (int) mem.flip(state[6]);
 
-            final int rndcol0 = Math.floorMod((int) flip_long(state[4]), NCOLS) * BLOCK_LEN_INT64;
-            final int rndcol1 = Math.floorMod((int) flip_long(state[6]), NCOLS) * BLOCK_LEN_INT64;
+            final int rndcol0 = Math.floorMod((int) mem.flip(state[4]), NCOLS) * BLOCK_LEN_INT64;
+            final int rndcol1 = Math.floorMod((int) mem.flip(state[6]), NCOLS) * BLOCK_LEN_INT64;
 
 //            System.out.printf("state[4]: %16X\n", st4);
 //            System.out.printf("state[6]: %16X\n", st6);
@@ -306,10 +289,10 @@ public class Sponge {
             final int word3 = offset3 + rndcol1;
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                state[j] ^= flip_long(flip_long(out[word0 + j])
-                        + flip_long(out[word1 + j])
-                        + flip_long(out[word2 + j])
-                        + flip_long(out[word3 + j])
+                state[j] ^= mem.flip(mem.flip(out[word0 + j])
+                        + mem.flip(out[word1 + j])
+                        + mem.flip(out[word2 + j])
+                        + mem.flip(out[word3 + j])
                 );
             }
 

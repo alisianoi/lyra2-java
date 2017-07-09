@@ -149,15 +149,15 @@ public class Lyra2 {
         // Wandering phase:
         // Wandering phase: visitation loop
         for (int i = 0; i != tcost * mcost; ++i) {
-//            final long st0 = Sponge.flip_long(sponge.state[0]);
-//            final long st2 = Sponge.flip_long(sponge.state[2]);
+//            final long st0 = mem.flip(sponge.state[0]);
+//            final long st2 = mem.flip(sponge.state[2]);
 //
 //            System.out.printf("nRows: %16X\n", mcost);
 //            System.out.printf("sponge.state[0]: %16X %20d\n", st0, st0);
 //            System.out.printf("sponge.state[2]: %16X %20d\n", st2, st2);
 
-            row0 = (int) Long.remainderUnsigned(Sponge.flip_long(sponge.state[0]), mcost);
-            row1 = (int) Long.remainderUnsigned(Sponge.flip_long(sponge.state[2]), mcost);
+            row0 = (int) Long.remainderUnsigned(mem.flip(sponge.state[0]), mcost);
+            row1 = (int) Long.remainderUnsigned(mem.flip(sponge.state[2]), mcost);
 
 //            System.out.printf("Wandering phase picks row0: %16X\n", row0);
 //            System.out.printf("Wandering phase picks row1: %16X\n", row1);
