@@ -1,0 +1,19 @@
+package at.ac.tuwien.lyra2;
+
+import java.util.List;
+
+public class DataEntry {
+    public Integer klen;
+    public Integer tcost;
+    public Integer mcost;
+
+    public String pwd;
+    public String salt;
+    public List<String> hash;
+
+    public Integer blocks;
+    public Integer columns;
+
+    public Integer threads;
+    public String sponge;
+}
