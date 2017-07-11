@@ -67,4 +67,14 @@ public class echo {
     public static void bytes(long[] longs, int n) {
         echo.bytes(longs, n, 16, 0);
     }
+
+    public static void params(LyraParams params) {
+        System.out.println("Echo LyraParams:");
+        System.out.println("klen: " + params.klen);
+        System.out.println("tcost: " + params.t_cost);
+        System.out.println("mcost: " + params.m_cost);
+        System.out.println("ROUNDS: " + params.ROUNDS);
+        System.out.println("N_COLS: " + params.N_COLS);
+        System.out.println("BLOCKS: " + params.BLOCK_LEN_INT64);
+    }
 }
