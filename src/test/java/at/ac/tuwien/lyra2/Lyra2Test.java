@@ -1,6 +1,5 @@
 package at.ac.tuwien.lyra2;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -11,7 +10,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -53,7 +51,22 @@ public class Lyra2Test {
 
     @Test
     public void simpleTest() {
-        assertEquals(this.entry.pwd, "password");
+        LyraParams params = new LyraParams(
+                entry.klen, entry.tcost, entry.mcost,
+                12, entry.columns, 12
+        );
+
+        byte[] hash = new byte[entry.klen];
+        byte[] pass = entry.pwd.getBytes();
+        byte[] salt = entry.salt.getBytes();
+
+        Lyra2.phs(hash, pass, salt, params);
+
+        byte[] correct_hash = pack.bytes(entry.hash);
+
+        for (int i = 0; i != entry.klen; ++i) {
+            assertEquals(correct_hash[i], hash[i]);
+        }
     }
 }
 

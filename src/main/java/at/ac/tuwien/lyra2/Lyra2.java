@@ -1,12 +1,12 @@
 package at.ac.tuwien.lyra2;
 
 public class Lyra2 {
-    public static Long phs(byte[] dst, byte[] src, byte[] salt, LyraParams params) {
+    public static void phs(byte[] dst, byte[] src, byte[] salt, LyraParams params) {
         // TODO: check parameters here
-        return hash(dst, src, salt, params);
+        hash(dst, src, salt, params);
     }
 
-    public static Long hash(byte[] dst, byte[] src, byte[] salt, LyraParams params) {
+    public static void hash(byte[] dst, byte[] src, byte[] salt, LyraParams params) {
         int    gap = 1;
         int   step = 1;
         int window = 2;
@@ -81,8 +81,8 @@ public class Lyra2 {
         // Wrap-up phase:
         Sponge sponge = new Sponge(params);
 
-        System.out.println("echo sponge.state after sponge init:");
-        echo.bytes(sponge.state, 8 * sponge.state.length);
+//        System.out.println("echo sponge.state after sponge init:");
+//        echo.bytes(sponge.state, 8 * sponge.state.length);
 
         for (int jj = 0, offset = 0; jj < nBlocksInput; ++jj) {
             sponge.absorb_block_blake2b_safe(whole_matrix, offset);
@@ -91,29 +91,29 @@ public class Lyra2 {
         }
 
         // Setup phase:
-        System.out.println("echo sponge.state after first absorb:");
-        echo.bytes(sponge.state, 8 * sponge.state.length);
+//        System.out.println("echo sponge.state after first absorb:");
+//        echo.bytes(sponge.state, 8 * sponge.state.length);
 
         sponge.reduced_squeeze_row0(whole_matrix, memory_matrix[0]);
 
-        System.out.println("echo sponge.state after reduced squeeze row0:");
-        echo.bytes(sponge.state, 8 * sponge.state.length);
-        System.out.println("echo whole_matrix after reduced squeeze row0:");
-        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[0]);
+//        System.out.println("echo sponge.state after reduced squeeze row0:");
+//        echo.bytes(sponge.state, 8 * sponge.state.length);
+//        System.out.println("echo whole_matrix after reduced squeeze row0:");
+//        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[0]);
 
         sponge.reduced_duplex_row1_and_row2(whole_matrix, memory_matrix[0], memory_matrix[1]);
 
-        System.out.println("echo sponge.state after reduced duplex row1 and row2 (1):");
-        echo.bytes(sponge.state, 8 * sponge.state.length);
-        System.out.println("echo whole_matrix after reduced duplex row1 and row2 (1):");
-        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[1]);
+//        System.out.println("echo sponge.state after reduced duplex row1 and row2 (1):");
+//        echo.bytes(sponge.state, 8 * sponge.state.length);
+//        System.out.println("echo whole_matrix after reduced duplex row1 and row2 (1):");
+//        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[1]);
 
         sponge.reduced_duplex_row1_and_row2(whole_matrix, memory_matrix[1], memory_matrix[2]);
 
-        System.out.println("echo sponge.state after reduced duplex row1 and row2 (2):");
-        echo.bytes(sponge.state, 8 * sponge.state.length);
-        System.out.println("echo whole_matrix after reduced duplex row1 and row2 (2):");
-        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[2]);
+//        System.out.println("echo sponge.state after reduced duplex row1 and row2 (2):");
+//        echo.bytes(sponge.state, 8 * sponge.state.length);
+//        System.out.println("echo whole_matrix after reduced duplex row1 and row2 (2):");
+//        echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[2]);
 
         // Setup phase: filling loop:
         for (row0 = 3; row0 != m_cost; ++row0) {
@@ -141,8 +141,8 @@ public class Lyra2 {
             }
         }
 
-        System.out.println("echo sponge.state before wandering phase:");
-        echo.bytes(sponge.state, 8 * sponge.state.length);
+//        System.out.println("echo sponge.state before wandering phase:");
+//        echo.bytes(sponge.state, 8 * sponge.state.length);
 
         // Wandering phase:
         // Wandering phase: visitation loop
@@ -170,15 +170,15 @@ public class Lyra2 {
                     memory_matrix[prev1]
             );
 
-            System.out.println("echo reduced duplex row wandering");
-            System.out.printf("whole_matrix for row0: (%16X)\n", row0);
-            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[row0]);
-            System.out.printf("whole_matrix for row1: (%16X)\n", row1);
-            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[row1]);
-            System.out.printf("whole_matrix for prev0: (%16X)\n", prev0);
-            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev0]);
-            System.out.printf("whole_matrix for prev1: (%16X)\n", prev1);
-            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev1]);
+//            System.out.println("echo reduced duplex row wandering");
+//            System.out.printf("whole_matrix for row0: (%16X)\n", row0);
+//            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[row0]);
+//            System.out.printf("whole_matrix for row1: (%16X)\n", row1);
+//            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[row1]);
+//            System.out.printf("whole_matrix for prev0: (%16X)\n", prev0);
+//            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev0]);
+//            System.out.printf("whole_matrix for prev1: (%16X)\n", prev1);
+//            echo.bytes(whole_matrix, 128, 16, 8 * memory_matrix[prev1]);
 
             prev0 = row0;
             prev1 = row1;
@@ -187,11 +187,9 @@ public class Lyra2 {
         // Wrap-up phase:
         sponge.absorb_column(whole_matrix, memory_matrix[row0]);
 
-        System.out.println("echo sponge state after absorb column");
-        echo.bytes(sponge.state, 128);
+//        System.out.println("echo sponge state after absorb column");
+//        echo.bytes(sponge.state, 128);
 
         sponge.squeeze(dst, dstlen);
-
-        return 0L;
     }
 }
