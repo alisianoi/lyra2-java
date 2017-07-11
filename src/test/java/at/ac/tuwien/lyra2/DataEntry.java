@@ -7,11 +7,12 @@ public class DataEntry {
     public Integer tcost;
     public Integer mcost;
 
-    public String pwd;
+    public String pass;
     public String salt;
     public List<String> hash;
 
     public Integer blocks;
+    public Integer rounds;
     public Integer columns;
 
     public Integer threads;
