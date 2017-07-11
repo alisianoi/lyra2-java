@@ -1,5 +1,7 @@
 package at.ac.tuwien.lyra2;
 
+import java.util.List;
+
 /**
  * Pack bytes as longs and longs as bytes.
  *
@@ -49,6 +51,45 @@ public class pack {
         }
 
         return bytes;
+    }
+
+    /**
+     * Pack an array of strings into an array of bytes.
+     * <p>
+     * For each string from an array, take its first two letters, assume hex.
+     * <p>
+     * Example:
+     * {@code ['DE', 'AD', 'BE', 'EF']} becomes {@code [0xDE, 0xAD, 0xBE, 0xEF]}
+     *
+     * @param strings an array of strings to convert
+     * @return an array of resulting bytes
+     */
+    public static byte[] bytes(String[] strings) {
+        byte[] bytes = new byte[strings.length];
+
+        for (int i = 0; i != strings.length; ++i) {
+            final byte b0 = Byte.parseByte(strings[i].substring(0, 1), 16);
+            final byte b1 = Byte.parseByte(strings[i].substring(1, 2), 16);
+
+            bytes[i] = (byte) ((b0 << 4) | b1);
+        }
+
+        return bytes;
+    }
+
+    /**
+     * Pack a List of strings into an array of bytes.
+     * <p>
+     * For each string from the List, take its first two letters, assume hex.
+     * <p>
+     * Example:
+     * {@code ['DE', 'AD', 'BE', 'EF']} becomes {@code [0xDE, 0xAD, 0xBE, 0xEF]}
+     *
+     * @param strings a List of strings to convert
+     * @return an array of resulting bytes
+     */
+    public static byte[] bytes(List<String> strings) {
+        return pack.bytes(strings.toArray(new String[strings.size()]));
     }
 
     /**
