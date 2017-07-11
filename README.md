@@ -1,6 +1,7 @@
 # [Lyra2][3]: a password hashing scheme
 
-[![Travis](https://img.shields.io/travis/all3fox/lyra2-java.svg?style=flat-square)]()
+[![Travis](https://img.shields.io/travis/all3fox/lyra2-java.svg?style=flat-square)](https://travis-ci.org/all3fox/lyra2-java)
+[![Coveralls](https://img.shields.io/coveralls/all3fox/lyra2-java.svg?style=flat-square)](https://coveralls.io/github/all3fox/lyra2-java)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/all3fox/lyra2-java/master/LICENSE)
 
 > a password hashing scheme (PHS) based on cryptographic
