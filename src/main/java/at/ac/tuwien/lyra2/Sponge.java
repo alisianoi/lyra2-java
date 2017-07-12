@@ -8,16 +8,18 @@ public class Sponge {
             0x1f83d9abfb41bd6bL, 0x5be0cd19137e2179L
     };
 
-    public long[] state = new long[16];
+    public long[] state;
+
+    public final int N_COLS;
 
     public final int ROUNDS;
-    public final int N_COLS;
 
     public final int BLOCK_LEN_INT64;
     public final int BLOCK_LEN_BYTES;
 
     public Sponge(LyraParams params) {
         // initialize the sponge state:
+        state = new long[16];
         // first 8 words are zeroed out
         for (int i = 0; i != 8; ++i) {
             state[i] = 0;

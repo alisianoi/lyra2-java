@@ -6,9 +6,9 @@ public class LyraParams {
     public final int t_cost;
     public final int m_cost;
 
-    public final int ROUNDS;
-
     public final int N_COLS;
+
+    public final int ROUNDS;
 
     public final int BLOCK_LEN_INT64;
     public final int BLOCK_LEN_BYTES;
@@ -31,8 +31,9 @@ public class LyraParams {
         this.t_cost = t_cost;
         this.m_cost = m_cost;
 
-        this.ROUNDS = ROUNDS;
         this.N_COLS = N_COLS;
+
+        this.ROUNDS = ROUNDS;
 
         this.BLOCK_LEN_INT64 =     BLOCK_LEN_INT64;
         this.BLOCK_LEN_BYTES = 8 * BLOCK_LEN_INT64;
