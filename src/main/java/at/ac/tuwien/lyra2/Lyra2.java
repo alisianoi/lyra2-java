@@ -85,7 +85,7 @@ public class Lyra2 {
 //        echo.bytes(sponge.state, 8 * sponge.state.length);
 
         for (int jj = 0, offset = 0; jj < nBlocksInput; ++jj) {
-            sponge.absorb_block_blake2b_safe(whole_matrix, offset);
+            sponge.absorb(whole_matrix, BLOCK_LEN_BLAKE2_SAFE_INT64, offset);
 
             offset += BLOCK_LEN_BLAKE2_SAFE_INT64;
         }
@@ -185,7 +185,7 @@ public class Lyra2 {
         }
 
         // Wrap-up phase:
-        sponge.absorb_column(whole_matrix, memory_matrix[row0]);
+        sponge.absorb(whole_matrix, BLOCK_LEN_INT64, memory_matrix[row0]);
 
 //        System.out.println("echo sponge state after absorb column");
 //        echo.bytes(sponge.state, 128);

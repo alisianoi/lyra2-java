@@ -30,18 +30,14 @@ public class Sponge {
     }
 
     /**
-     * @param src a hard-coded 512 bits (Blake2b and BlaMka restriction)
+     * Absorb words into the sponge
+     *
+     * @param src    - a source array of words to absorb
+     * @param len    - a number of words to absorb from {@code src}
+     * @param offset - an index into {@code src} to start from
      */
-    public void absorb_block_blake2b_safe(final long[] src, final int offset) {
-        for (int i = 0; i < 8; ++i) {
-            state[i] ^= src[offset + i];
-        }
-
-        sponge_lyra();
-    }
-
-    public void absorb_column(long[] src, int offset) {
-        for (int i = 0; i != BLOCK_LEN_INT64; ++i) {
+    public void absorb(final long[] src, final int len, final int offset) {
+        for (int i = 0; i != len; ++i) {
             state[i] ^= src[offset + i];
         }
 
