@@ -119,7 +119,7 @@ public class Sponge {
 //            final long xa = mem.flip(state[a]);
 //            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
 //        }
-        state[d] = mem.flip(rotr64(mem.flip(state[d]) ^ mem.flip(state[a]), 32));
+        state[d] = mem.flip(rotr64(mem.flip(state[d] ^ state[a]), 32));
 
 //        if (r == 0 && i == 0) {
 //            final long xc = mem.flip(state[c]);
@@ -133,7 +133,7 @@ public class Sponge {
 //            final long xc = mem.flip(state[c]);
 //            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
 //        }
-        state[b] = mem.flip(rotr64(mem.flip(state[b]) ^ mem.flip(state[c]), 24));
+        state[b] = mem.flip(rotr64(mem.flip(state[b] ^ state[c]), 24));
 
 //        if (r == 0 && i == 0) {
 //            final long xa = mem.flip(state[a]);
@@ -147,7 +147,7 @@ public class Sponge {
 //            final long xa = mem.flip(state[a]);
 //            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
 //        }
-        state[d] = mem.flip(rotr64(mem.flip(state[d]) ^ mem.flip(state[a]), 16));
+        state[d] = mem.flip(rotr64(mem.flip(state[d] ^ state[a]), 16));
 
 //        if (r == 0 && i == 0) {
 //            final long xc = mem.flip(state[c]);
@@ -161,7 +161,7 @@ public class Sponge {
 //            final long xc = mem.flip(state[c]);
 //            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
 //        }
-        state[b] = mem.flip(rotr64(mem.flip(state[b]) ^ mem.flip(state[c]), 63));
+        state[b] = mem.flip(rotr64(mem.flip(state[b] ^ state[c]), 63));
 
 //        if (r == 0 && i < 3) {
 //            System.out.printf("G round: %02d step: %02d\n", r, i);
