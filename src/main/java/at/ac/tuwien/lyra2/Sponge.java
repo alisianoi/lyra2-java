@@ -126,7 +126,7 @@ public class Sponge {
         return (word << b) | (word >>> (64 - b));
     }
 
-    public void G(final int r, final int i, final int a, final int b, final int c, final int d) {
+    public void G(final int a, final int b, final int c, final int d) {
         state[a] = mem.flip(mem.flip(state[a]) + mem.flip(state[b]));
         state[d] = rotl64(state[d] ^ state[a], 32);
 
@@ -142,33 +142,35 @@ public class Sponge {
         state[b] = mem.flip(rotr64(mem.flip(state[b] ^ state[c]), 63));
     }
 
-    public void round_lyra(int round) {
-        G(round, 0, 0, 4,  8, 12);
-        G(round, 1, 1, 5,  9, 13);
-        G(round, 2, 2, 6, 10, 14);
-        G(round, 3, 3, 7, 11, 15);
-        G(round, 4, 0, 5, 10, 15);
-        G(round, 5, 1, 6, 11, 12);
-        G(round, 6, 2, 7,  8, 13);
-        G(round, 7, 3, 4,  9, 14);
+    /**
+     * Update the state of the sponge
+     *
+     * @params rounds - roughly the number of calls to state permutation
+     */
+    public void sponge_lyra(final int rounds) {
+        for (int round = 0; round != rounds; ++round) {
+            G(0, 4,  8, 12);
+            G(1, 5,  9, 13);
+            G(2, 6, 10, 14);
+            G(3, 7, 11, 15);
+            G(0, 5, 10, 15);
+            G(1, 6, 11, 12);
+            G(2, 7,  8, 13);
+            G(3, 4,  9, 14);
+        }
     }
 
+    /**
+     * Update the state of the sponge
+     */
     public void sponge_lyra() {
-        for (int round = 0; round != 12; ++round) {
-            round_lyra(round);
-        }
-    }
-
-    public void reduced_sponge_lyra() {
-        for (int round = 0; round != this.ROUNDS; ++round) {
-            round_lyra(round);
-        }
+        sponge_lyra(12);
     }
 
     /**
      * TODO: below, either word or i could be optimized out
      */
-    public void reduced_squeeze_row0(long[] out, int offset) {
+    public void reduced_squeeze_row0(long[] out, final int offset) {
         int word = (N_COLS - 1) * BLOCK_LEN_INT64;
 
         for (int i = 0; i != N_COLS; ++i) {
@@ -178,7 +180,7 @@ public class Sponge {
 
             word -= BLOCK_LEN_INT64;
 
-            reduced_sponge_lyra();
+            sponge_lyra(ROUNDS);
         }
     }
 
@@ -191,7 +193,7 @@ public class Sponge {
                 state[j] ^= out[offset1 + word1 + j];
             }
 
-            reduced_sponge_lyra();
+            sponge_lyra(ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 out[offset2 + word2 + j] = out[offset1 + word1 + j] ^ state[j];
@@ -226,7 +228,7 @@ public class Sponge {
                 );
             }
 
-            reduced_sponge_lyra();
+            sponge_lyra(ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 out[word3 + j] = out[word1 + j] ^ state[j];
@@ -286,7 +288,7 @@ public class Sponge {
 //            System.out.println("state after first loop:");
 //            mem.dump_bytes(state, 128);
 
-            reduced_sponge_lyra();
+            sponge_lyra(ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 out[word0 + j] ^= state[j];
