@@ -111,71 +111,35 @@ public class Sponge {
      * @param b    - a number of bits to rotate by
      * @return a new word, the result of rotation
      */
-    public static long rotr64(final long word, final byte b) {
-        return (w << (64 - b)) | (w >>> b);
+    public static long rotr64(final long word, final int b) {
+        return (word << (64 - b)) | (word >>> b);
+    }
+
+    /**
+     * Rotate a word by several bits to the left
+     *
+     * @param word - a word to rotate to the left
+     * @param b    - a number of bits to rotate by
+     * @return a new word, the result of rotation
+     */
+    public static long rotl64(final long word, final int b) {
+        return (word << b) | (word >>> (64 - b));
     }
 
     public void G(final int r, final int i, final int a, final int b, final int c, final int d) {
-//        if (r == 0 && i == 0) {
-//            final long xa = mem.flip(state[a]);
-//            final long xb = mem.flip(state[b]);
-//            System.out.printf("%16X + %16X = %16X\n", xa, xb, xa + xb);
-//        }
         state[a] = mem.flip(mem.flip(state[a]) + mem.flip(state[b]));
+        state[d] = rotl64(state[d] ^ state[a], 32);
 
-//        if (r == 0 && i == 0) {
-//            final long xd = mem.flip(state[d]);
-//            final long xa = mem.flip(state[a]);
-//            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
-//        }
-        state[d] = mem.flip(rotr64(mem.flip(state[d] ^ state[a]), 32));
-
-//        if (r == 0 && i == 0) {
-//            final long xc = mem.flip(state[c]);
-//            final long xd = mem.flip(state[d]);
-//            System.out.printf("%16X + %16X = %16X\n", xc, xd, xc + xd);
-//        }
         state[c] = mem.flip(mem.flip(state[c]) + mem.flip(state[d]));
+        state[b] = rotl64(state[b] ^ state[c], 24);
 
-//        if (r == 0 && i == 0) {
-//            final long xb = mem.flip(state[b]);
-//            final long xc = mem.flip(state[c]);
-//            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
-//        }
-        state[b] = mem.flip(rotr64(mem.flip(state[b] ^ state[c]), 24));
-
-//        if (r == 0 && i == 0) {
-//            final long xa = mem.flip(state[a]);
-//            final long xb = mem.flip(state[b]);
-//            System.out.printf("%16X + %16X = %16X\n", xa, xb, xa + xb);
-//        }
         state[a] = mem.flip(mem.flip(state[a]) + mem.flip(state[b]));
+        state[d] = rotl64(state[d] ^ state[a], 16);
 
-//        if (r == 0 && i == 0) {
-//            final long xd = mem.flip(state[d]);
-//            final long xa = mem.flip(state[a]);
-//            System.out.printf("%16X + %16X = %16X\n", xd, xa, xd ^ xa);
-//        }
-        state[d] = mem.flip(rotr64(mem.flip(state[d] ^ state[a]), 16));
-
-//        if (r == 0 && i == 0) {
-//            final long xc = mem.flip(state[c]);
-//            final long xd = mem.flip(state[d]);
-//            System.out.printf("%16X + %16X = %16X\n", xc, xd, xc + xd);
-//        }
         state[c] = mem.flip(mem.flip(state[c]) + mem.flip(state[d]));
-
-//        if (r == 0 && i == 0) {
-//            final long xb = mem.flip(state[b]);
-//            final long xc = mem.flip(state[c]);
-//            System.out.printf("%16X + %16X = %16X\n", xb, xc, xb ^ xc);
-//        }
+        // Cannot use the left rotation trick here: 63 % 8 != 0, so
+        // individual bytes do not stay the same, they change too.
         state[b] = mem.flip(rotr64(mem.flip(state[b] ^ state[c]), 63));
-
-//        if (r == 0 && i < 3) {
-//            System.out.printf("G round: %02d step: %02d\n", r, i);
-//            mem.dump_bytes(state, 8 * state.length);
-//        }
     }
 
     public void round_lyra(int round) {
