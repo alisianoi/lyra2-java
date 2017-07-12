@@ -37,7 +37,7 @@ public class Sponge {
     }
 
     /**
-     * Absorb words into the sponge
+     * Absorb words into the sponge.
      *
      * @param src    - a source array of words to absorb
      * @param len    - a number of words to absorb from {@code src}
@@ -52,14 +52,14 @@ public class Sponge {
     }
 
     /**
-     * Squeeze bytes from the sponge
+     * Squeeze bytes from the sponge.
      *
      * @param dst - a destination array to squeeze bytes into
      * @param len - a number of bytes to squeeze into {@code dst}
      */
     public void squeeze(byte[] dst, final int len) {
-        final int div = len / BLOCK_LEN_BYTES; // complete blocks, 96 bytes each
-        final int mod = len % BLOCK_LEN_BYTES; // incomplete block, [0..96] bytes
+        final int div = len / BLOCK_LEN_BYTES;
+        final int mod = len % BLOCK_LEN_BYTES;
 
         // Assume block size is a multiple of 8 bytes
         for (int i = 0; i != div; ++i) {
@@ -105,7 +105,7 @@ public class Sponge {
     }
 
     /**
-     * Rotate a word by several bits to the right
+     * Rotate a word by several bits to the right.
      *
      * @param word - a word to rotate to the right
      * @param b    - a number of bits to rotate by
@@ -116,7 +116,7 @@ public class Sponge {
     }
 
     /**
-     * Rotate a word by several bits to the left
+     * Rotate a word by several bits to the left.
      *
      * @param word - a word to rotate to the left
      * @param b    - a number of bits to rotate by
@@ -142,10 +142,11 @@ public class Sponge {
         state[b] = mem.flip(rotr64(mem.flip(state[b] ^ state[c]), 63));
     }
 
+    // TODO: consider renaming to "permute_state" or similar
     /**
-     * Update the state of the sponge
+     * Update the state of the sponge.
      *
-     * @params rounds - roughly the number of calls to state permutation
+     * @params rounds - roughly the number of state permutation
      */
     public void sponge_lyra(final int rounds) {
         for (int round = 0; round != rounds; ++round) {
@@ -161,21 +162,18 @@ public class Sponge {
     }
 
     /**
-     * Update the state of the sponge
+     * Update the state of the sponge, 12 rounds is a "full" update.
      */
     public void sponge_lyra() {
         sponge_lyra(12);
     }
 
-    /**
-     * TODO: below, either word or i could be optimized out
-     */
-    public void reduced_squeeze_row0(long[] out, final int offset) {
+    public void reduced_squeeze_row0(long[] dst, final int offset) {
         int word = (N_COLS - 1) * BLOCK_LEN_INT64;
 
         for (int i = 0; i != N_COLS; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                out[offset + word + j] = state[j];
+                dst[offset + word + j] = state[j];
             }
 
             word -= BLOCK_LEN_INT64;
@@ -184,19 +182,19 @@ public class Sponge {
         }
     }
 
-    public void reduced_duplex_row1_and_row2(long[] out, int offset1, int offset2) {
+    public void reduced_duplex_row1_and_row2(long[] dst, final int offset1, final int offset2) {
         int word1 = 0;
         int word2 = (N_COLS - 1) * BLOCK_LEN_INT64;
 
         for (int i = 0; i != N_COLS; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                state[j] ^= out[offset1 + word1 + j];
+                state[j] ^= dst[offset1 + word1 + j];
             }
 
             sponge_lyra(ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                out[offset2 + word2 + j] = out[offset1 + word1 + j] ^ state[j];
+                dst[offset2 + word2 + j] = dst[offset1 + word1 + j] ^ state[j];
             }
 
             word1 += BLOCK_LEN_INT64;
@@ -207,15 +205,15 @@ public class Sponge {
     /**
      * Do a duplexing operation
      *
-     * All of the offsets are indecies into @param{out} that denote a start of some *row* of bytes.
+     * All of the offsets are indecies into @param{dst} that denote a start of some *row* of bytes.
      *
-     * @param out     -- a matrix that both provides and receives bytes
+     * @param dst     -- a matrix that both provides and receives bytes
      * @param offset0 -- a row that provides bytes and receives bytes too
      * @param offset1 -- a row that provides bytes (latest initialized row)
      * @param offset2 -- a row that provides bytes (latest revisited and updated row)
      * @param offset3 -- a row that receives bytes
      */
-    public void reduced_duplex_row_filling(long out[], int offset0, int offset1, int offset2, int offset3) {
+    public void reduced_duplex_row_filling(long dst[], final int offset0, final int offset1, final int offset2, final int offset3) {
         int word0 = offset0;
         int word1 = offset1;
         int word2 = offset2;
@@ -224,18 +222,20 @@ public class Sponge {
         for (int i = 0; i != N_COLS; ++i) {
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 state[j] ^= mem.flip(
-                        mem.flip(out[word0 + j]) + mem.flip(out[word1 + j]) + mem.flip(out[word2 + j])
+                      mem.flip(dst[word0 + j])
+                    + mem.flip(dst[word1 + j])
+                    + mem.flip(dst[word2 + j])
                 );
             }
 
             sponge_lyra(ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                out[word3 + j] = out[word1 + j] ^ state[j];
+                dst[word3 + j] = dst[word1 + j] ^ state[j];
             }
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                out[word0 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];
+                dst[word0 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];
             }
 
             word0 += BLOCK_LEN_INT64;
@@ -248,57 +248,41 @@ public class Sponge {
     /**
      * Do a duplexing operation
      *
-     * All of the offsets are indecies into @param{out} that denote a start of some *row* of bytes.
+     * All of the offsets are indecies into @param{dst} that denote a start of some *row* of bytes.
      *
      * @param offset0 -- a row that provides bytes and receives bytes
      * @param offset1 -- a row that provides bytes and receives bytes after rotation
      * @param offset2 -- a row that provides bytes
      * @param offset3 -- a row that provides bytes
      */
-    public void reduced_duplex_row_wandering(long[] out, int offset0, int offset1, int offset2, int offset3) {
+    public void reduced_duplex_row_wandering(long[] dst, final int offset0, final int offset1, final int offset2, final int offset3) {
         int word0 = offset0;
         int word1 = offset1;
 
         for (int i = 0; i != N_COLS; ++i) {
-
-//            final int st4 = (int) mem.flip(state[4]);
-//            final int st6 = (int) mem.flip(state[6]);
-
             final int rndcol0 = Math.floorMod((int) mem.flip(state[4]), N_COLS) * BLOCK_LEN_INT64;
             final int rndcol1 = Math.floorMod((int) mem.flip(state[6]), N_COLS) * BLOCK_LEN_INT64;
-
-//            System.out.printf("state[4]: %16X\n", st4);
-//            System.out.printf("state[6]: %16X\n", st6);
-//            System.out.printf("state[4] %% N_COLS: %16X\n", Math.floorMod(st4, N_COLS));
-//            System.out.printf("state[6] %% N_COLS: %16X\n", Math.floorMod(st6, N_COLS));
-//            System.out.printf("rndcol0: %16X\n", rndcol0);
-//            System.out.printf("rndcol1: %16X\n", rndcol1);
 
             final int word2 = offset2 + rndcol0;
             final int word3 = offset3 + rndcol1;
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                state[j] ^= mem.flip(mem.flip(out[word0 + j])
-                        + mem.flip(out[word1 + j])
-                        + mem.flip(out[word2 + j])
-                        + mem.flip(out[word3 + j])
+                state[j] ^= mem.flip(
+                      mem.flip(dst[word0 + j])
+                    + mem.flip(dst[word1 + j])
+                    + mem.flip(dst[word2 + j])
+                    + mem.flip(dst[word3 + j])
                 );
             }
-
-//            System.out.println("state after first loop:");
-//            mem.dump_bytes(state, 128);
 
             sponge_lyra(ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                out[word0 + j] ^= state[j];
+                dst[word0 + j] ^= state[j];
             }
 
-//            System.out.println("out[word0 + j] after xor");
-//            mem.dump_bytes(out, 128, 16, 8 * word0);
-
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                out[word1 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];
+                dst[word1 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];
             }
 
             word0 += BLOCK_LEN_INT64;
