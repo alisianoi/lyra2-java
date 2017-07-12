@@ -104,8 +104,15 @@ public class Sponge {
         }
     }
 
-    public static long rotr64(final long w, final int b) {
-        return (w >>> b) | (w << (64 - b));
+    /**
+     * Rotate a word by several bits to the right
+     *
+     * @param word - a word to rotate to the right
+     * @param b    - a number of bits to rotate by
+     * @return a new word, the result of rotation
+     */
+    public static long rotr64(final long word, final byte b) {
+        return (w << (64 - b)) | (w >>> b);
     }
 
     public void G(final int r, final int i, final int a, final int b, final int c, final int d) {
