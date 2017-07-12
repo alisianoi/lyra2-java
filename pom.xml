@@ -70,6 +70,7 @@
                         <exclude>picocli/CommandLine*</exclude>
                         <exclude>at/ac/tuwien/lyra2/ConsoleArgs*</exclude>
                         <exclude>at/ac/tuwien/lyra2/Main*</exclude>
+                        <exclude>at/ac/tuwien/lyra2/echo*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
