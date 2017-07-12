@@ -12,21 +12,26 @@ public class Sponge {
 
     public final int ROUNDS;
     public final int N_COLS;
+
     public final int BLOCK_LEN_INT64;
+    public final int BLOCK_LEN_BYTES;
 
     public Sponge(LyraParams params) {
+        // initialize the sponge state:
+        // first 8 words are zeroed out
         for (int i = 0; i != 8; ++i) {
             state[i] = 0;
         }
 
+        // second 8 words are blake2b_IV's
         for (int i = 0; i != 8; ++i) {
-            state[i + 8] = mem.flip(blake2b_IV[i]);
+            state[8 + i] = mem.flip(blake2b_IV[i]);
         }
 
         this.ROUNDS = params.ROUNDS;
-
         this.N_COLS = params.N_COLS;
         this.BLOCK_LEN_INT64 = params.BLOCK_LEN_INT64;
+        this.BLOCK_LEN_BYTES = params.BLOCK_LEN_BYTES;
     }
 
     /**
@@ -44,20 +49,27 @@ public class Sponge {
         sponge_lyra();
     }
 
-    // TODO: at least two final loops could be optimized
+    /**
+     * Squeeze bytes from the sponge
+     *
+     * @param dst - a destination array to squeeze bytes into
+     * @param len - a number of bytes to squeeze into {@code dst}
+     */
     public void squeeze(byte[] dst, final int len) {
-        final int BLOCK_LEN_BYTES = 8 * BLOCK_LEN_INT64; // 8 * 12
-
         final int div = len / BLOCK_LEN_BYTES; // complete blocks, 96 bytes each
         final int mod = len % BLOCK_LEN_BYTES; // incomplete block, [0..96] bytes
 
         // Assume block size is a multiple of 8 bytes
         for (int i = 0; i != div; ++i) {
+            final int offset0 = i * BLOCK_LEN_BYTES;
+
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
+                final int offset1 = offset0 + 8 * j;
+
                 byte[] bytes = pack.bytes(state[j]);
 
                 for (int k = 0; k != 8; ++k) {
-                    dst[i * BLOCK_LEN_BYTES + 8 * j + k] = bytes[k];
+                    dst[offset1 + k] = bytes[k];
                 }
             }
 
@@ -67,19 +79,25 @@ public class Sponge {
         final int div8 = mod / 8;
         final int mod8 = mod % 8;
 
+        final int offset0 = div * BLOCK_LEN_BYTES;
+
         for (int i = 0; i != div8; ++i) {
+            final int offset1 = offset0 + 8 * i;
+
             final byte[] bytes = pack.bytes(state[i]);
 
             for (int j = 0; j != 8; ++j) {
-                dst[div * BLOCK_LEN_BYTES + 8 * i + j] = bytes[j];
+                dst[offset1 + j] = bytes[j];
             }
         }
+
+        final int offset1 = offset0 + 8 * div8;
 
         for (int i = 0; i != mod8; ++i) {
             final byte[] bytes = pack.bytes(state[div8]);
 
             for (int j = 0; j != mod8; ++j) {
-                dst[div * BLOCK_LEN_BYTES + 8 * div8 + j] = bytes[j];
+                dst[offset1 + j] = bytes[j];
             }
         }
     }
