@@ -4,8 +4,8 @@
 [![Coveralls](https://img.shields.io/coveralls/all3fox/lyra2-java.svg?style=flat-square)](https://coveralls.io/github/all3fox/lyra2-java)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/all3fox/lyra2-java/master/LICENSE)
 
-> a password hashing scheme (PHS) based on cryptographic
-  sponges. Lyra2 was designed to be strictly sequential (i.e., not
+> Lyra2 is a password hashing scheme (PHS) based on cryptographic
+  sponges. It was designed to be strictly sequential (i.e., not
   easily parallelizable), providing strong security even against
   attackers that uses multiple processing cores (e.g., custom hardware
   or a powerful GPU). At the same time, it is very simple to implement
@@ -32,13 +32,13 @@ mvn package
 After maven packages the project, you can run it like so:
 
 ```
-java -jar ./target/*-with-dependencies.jar password salt 3 3 3
+java -jar ./target/lyra2-*-with-dependencies.jar password salt 3 3 3
 ```
 
 You can get help about command line switches with `--help`:
 
 ```
-java -jar ./target/*-with-dependencies.jar --help
+java -jar ./target/lyra2-*-with-dependencies.jar --help
 ```
 
 # How to run tests?
@@ -47,11 +47,20 @@ java -jar ./target/*-with-dependencies.jar --help
 mvn test
 ```
 
-Currently, just one configuration is tested, its parameters are:
+The unit tests cover two configurations of Lyra2:
 
-memory matrix with 256 columns, each block is 12 `int64`'s long, the
-sponge is based on Blake2b and makes 12 rounds, the mode is
-single-threaded.
+1. Memory matrix of size `mcost * blocks * columns`, where:
+
+   `mcost` is a dynamic parameter and `blocks = 12` and `columns = 256`
+
+1. The `sponge`'s are set to either `blake2b` or `blamka`
+1. For both sponges, `rounds = 12`
+1. The mode of Lyra2 operation is single-threaded
+
+Note: every parameter, except for mode of operation, can be changed
+(output length, `blocks`, `columns`, `rounds`, etc.) but you will also
+have to provide a data file that would hold the correct hash for that
+combination of parameters. See `tests/resources` for file format.
 
 The resulting hash is byte-level compatible with the [original C
 implementation][1]. It means that if you match the build- and runtime
