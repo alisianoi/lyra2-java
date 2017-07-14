@@ -100,6 +100,8 @@ public class Lyra2 {
             sponge = new SpongeBlake2b(params);
         } else if (params.SPONGE.equals("blamka")) {
             sponge = new SpongeBlamka(params);
+        } else if (params.SPONGE.equals("half-round-blamka")) {
+            sponge = new SpongeHalfBlamka(params);
         } else {
             System.err.println("Could not recognize sponge: " + params.SPONGE);
 

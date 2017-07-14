@@ -134,7 +134,7 @@ public abstract class Sponge {
     /**
      * Update the state of the sponge.
      *
-     * @params rounds - roughly the number of state permutation
+     * @param rounds - roughly the number of state permutation
      */
     public void sponge_lyra(final int rounds) {
         for (int round = 0; round != rounds; ++round) {

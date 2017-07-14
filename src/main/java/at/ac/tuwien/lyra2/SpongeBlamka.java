@@ -31,6 +31,5 @@ public class SpongeBlamka extends Sponge {
         // Cannot use the left rotation trick here: 63 % 8 != 0, so
         // individual bytes do not stay the same, they change too.
         state[b] = mem.flip(rotr64(mem.flip(state[b] ^ state[c]), 63));
-
     }
 }

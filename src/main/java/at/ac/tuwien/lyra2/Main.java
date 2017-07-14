@@ -13,7 +13,7 @@ public class Main {
         }
 
         String SPONGE = args.SPONGE = args.SPONGE.toLowerCase();
-        if (!SPONGE.equals("blake2b") && !SPONGE.equals("blamka") && !SPONGE.equals("half-blamka")) {
+        if (!SPONGE.equals("blake2b") && !SPONGE.equals("blamka") && !SPONGE.equals("half-round-blamka")) {
             System.err.println("--sponge must be one of: blake2b, blamka or half-blamka");
             System.err.println("Instead, you specified --sponge " + SPONGE);
 

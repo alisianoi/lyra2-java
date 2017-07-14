@@ -28,7 +28,8 @@ public class Lyra2Test {
 
         String[] fnames = new String[] {
                 "data-15-blake2b.yml",
-                "data-15-blamka.yml"
+                "data-15-blamka.yml",
+                "data-15-half-round-blamka.yml"
         };
 
         List<Object[]> entries = new ArrayList<>();
