@@ -26,18 +26,25 @@ public class Lyra2Test {
 
         Yaml yaml = new Yaml(constructor);
 
+        String[] fnames = new String[] {
+                "data-15-blake2b.yml",
+                "data-15-blamka.yml"
+        };
+
         List<Object[]> entries = new ArrayList<>();
 
-        try {
-            ClassLoader loader = ClassLoader.getSystemClassLoader();
-            String s = loader.getResource("data.yml").getFile();
-            FileReader reader = new FileReader(s);
+        for (String fname: fnames) {
+            try {
+                ClassLoader loader = ClassLoader.getSystemClassLoader();
+                String s = loader.getResource(fname).getFile();
+                FileReader reader = new FileReader(s);
 
-            for (Object data: yaml.loadAll(reader)) {
-                entries.add(new Object[] {data});
+                for (Object data : yaml.loadAll(reader)) {
+                    entries.add(new Object[]{data});
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
 
         return entries;

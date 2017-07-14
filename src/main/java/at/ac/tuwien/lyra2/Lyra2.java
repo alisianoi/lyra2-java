@@ -98,8 +98,12 @@ public class Lyra2 {
         Sponge sponge;
         if (params.SPONGE.equals("blake2b")) {
             sponge = new SpongeBlake2b(params);
+        } else if (params.SPONGE.equals("blamka")) {
+            sponge = new SpongeBlamka(params);
         } else {
-            sponge = new SpongeBlake2b(params);
+            System.err.println("Could not recognize sponge: " + params.SPONGE);
+
+            return;
         }
 
         for (int jj = 0, offset = 0; jj < nBlocksInput; ++jj) {
