@@ -1,6 +1,6 @@
 package at.ac.tuwien.lyra2;
 
-public class Sponge {
+public abstract class Sponge {
     static final long[] blake2b_IV = {
             0x6a09e667f3bcc908L, 0xbb67ae8584caa73bL,
             0x3c6ef372fe94f82bL, 0xa54ff53a5f1d36f1L,
@@ -30,8 +30,8 @@ public class Sponge {
             state[8 + i] = mem.flip(blake2b_IV[i]);
         }
 
-        this.ROUNDS = params.ROUNDS;
         this.N_COLS = params.N_COLS;
+        this.ROUNDS = params.ROUNDS;
         this.BLOCK_LEN_INT64 = params.BLOCK_LEN_INT64;
         this.BLOCK_LEN_BYTES = params.BLOCK_LEN_BYTES;
     }
@@ -126,21 +126,7 @@ public class Sponge {
         return (word << b) | (word >>> (64 - b));
     }
 
-    public void G(final int a, final int b, final int c, final int d) {
-        state[a] = mem.flip(mem.flip(state[a]) + mem.flip(state[b]));
-        state[d] = rotl64(state[d] ^ state[a], 32);
-
-        state[c] = mem.flip(mem.flip(state[c]) + mem.flip(state[d]));
-        state[b] = rotl64(state[b] ^ state[c], 24);
-
-        state[a] = mem.flip(mem.flip(state[a]) + mem.flip(state[b]));
-        state[d] = rotl64(state[d] ^ state[a], 16);
-
-        state[c] = mem.flip(mem.flip(state[c]) + mem.flip(state[d]));
-        // Cannot use the left rotation trick here: 63 % 8 != 0, so
-        // individual bytes do not stay the same, they change too.
-        state[b] = mem.flip(rotr64(mem.flip(state[b] ^ state[c]), 63));
-    }
+    public abstract void G(final int a, final int b, final int c, final int d);
 
     // TODO: consider renaming to "permute_state" or similar
     /**

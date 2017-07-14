@@ -8,6 +8,8 @@ public class LyraParams {
 
     public final int N_COLS;
 
+    public final String SPONGE;
+
     public final int ROUNDS;
 
     public final int BLOCK_LEN_INT64;
@@ -24,7 +26,7 @@ public class LyraParams {
 
     public LyraParams(
             int klen, int t_cost, int m_cost,
-            int ROUNDS, int N_COLS, int BLOCK_LEN_INT64
+            int N_COLS, String SPONGE, int ROUNDS, int BLOCK_LEN_INT64
     ) {
         this.klen = klen;
 
@@ -33,6 +35,7 @@ public class LyraParams {
 
         this.N_COLS = N_COLS;
 
+        this.SPONGE = SPONGE;
         this.ROUNDS = ROUNDS;
 
         this.BLOCK_LEN_INT64 =     BLOCK_LEN_INT64;

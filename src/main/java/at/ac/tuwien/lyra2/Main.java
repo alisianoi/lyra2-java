@@ -7,14 +7,22 @@ public class Main {
         ConsoleArgs args = CommandLine.populateCommand(new ConsoleArgs(), argv);
 
         if (args.help) {
-            CommandLine.usage(new ConsoleArgs(), System.err);
+            CommandLine.usage(new ConsoleArgs(), System.out);
+
+            return;
+        }
+
+        String SPONGE = args.SPONGE = args.SPONGE.toLowerCase();
+        if (!SPONGE.equals("blake2b") && !SPONGE.equals("blamka") && !SPONGE.equals("half-blamka")) {
+            System.err.println("--sponge must be one of: blake2b, blamka or half-blamka");
+            System.err.println("Instead, you specified --sponge " + SPONGE);
 
             return;
         }
 
         LyraParams params = new LyraParams(
                 args.klen, args.t_cost, args.m_cost,
-                args.ROUNDS, args.N_COLS, args.BLOCK_LEN_INT64
+                args.N_COLS, args.SPONGE, args.ROUNDS, args.BLOCK_LEN_INT64
         );
 
         byte[] hash = new byte[args.klen];

@@ -53,7 +53,7 @@ public class Lyra2Test {
     public void simpleTest() {
         LyraParams params = new LyraParams(
                 entry.klen, entry.tcost, entry.mcost,
-                entry.rounds, entry.columns, entry.blocks
+                entry.columns, entry.sponge, entry.rounds, entry.blocks
         );
 
         byte[] hash = new byte[entry.klen];

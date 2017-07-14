@@ -6,7 +6,7 @@ public class Lyra2 {
      *
      * @param hash   - byte array that will contain computed hash
      * @param pass   - a password that was converted to byte form
-     * @param salt   - a salt (makes hash precomputation pointless)
+     * @param salt   - a salt (makes precomputing the hash pointless)
      * @param params - an object that holds t_cost, m_cost, etc.
      */
     public static void
@@ -20,7 +20,7 @@ public class Lyra2 {
      *
      * @param hash   - byte array that will contain computed hash
      * @param pass   - a password that was converted to byte form
-     * @param salt   - a salt (makes hash precomputation pointless)
+     * @param salt   - a salt (makes precomputing the hash pointless)
      * @param params - an object that holds t_cost, m_cost, etc.
      */
     public static void
@@ -95,7 +95,12 @@ public class Lyra2 {
             matrix[jj] = buffer1[jj];
         }
 
-        Sponge sponge = new Sponge(params);
+        Sponge sponge;
+        if (params.SPONGE.equals("blake2b")) {
+            sponge = new SpongeBlake2b(params);
+        } else {
+            sponge = new SpongeBlake2b(params);
+        }
 
         for (int jj = 0, offset = 0; jj < nBlocksInput; ++jj) {
             sponge.absorb(matrix, BLOCK_LEN_BLAKE2_SAFE_INT64, offset);

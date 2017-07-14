@@ -7,7 +7,8 @@ import picocli.CommandLine.Parameters;
 @Command(
         name="Lyra2",
         description="Hash your password with adjustable time and memory costs",
-        footer="Java version by Aleksandr Lisianoi"
+        footer="Java version by Aleksandr Lisianoi",
+        showDefaultValues = true
 )
 public class ConsoleArgs {
     @Option(names = {"-h", "--help"}, help = true, description = "display this help message")
@@ -28,12 +29,15 @@ public class ConsoleArgs {
     @Parameters(paramLabel="mcost", index="4", description="the memory cost value")
     public int m_cost;
 
+    @Option(names={"--blocks"}, description="the number of INT64 that make up a block")
+    public int BLOCK_LEN_INT64 = 12;
+
     @Option(names={"--columns"}, description="the number of columns")
     public int N_COLS = 256;
 
+    @Option(names={"--sponge"}, description="the sponge to use")
+    public String SPONGE = "blake2b";
+
     @Option(names={"--rounds"}, description="the number of sponge rounds in reduced operations")
     public int ROUNDS = 1;
-
-    @Option(names={"--blocks"}, description="the number of INT64 that make up a block")
-    public int BLOCK_LEN_INT64 = 12;
 }
