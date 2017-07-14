@@ -47,20 +47,20 @@ java -jar ./target/lyra2-*-with-dependencies.jar --help
 mvn test
 ```
 
-The unit tests cover two configurations of Lyra2:
+The unit tests cover three configurations of Lyra2:
 
 1. Memory matrix of size `mcost * blocks * columns`, where:
 
    `mcost` is a dynamic parameter and `blocks = 12` and `columns = 256`
 
-1. The `sponge`'s are set to either `blake2b` or `blamka`
-1. For both sponges, `rounds = 12`
+1. The `sponge`'s are set to either `blake2b`, `blamka` or `half round blamka`
+1. For all sponges, `half-rounds = 12` and `full-rounds` depends on the sponge
 1. The mode of Lyra2 operation is single-threaded
 
 Note: every parameter, except for mode of operation, can be changed
-(output length, `blocks`, `columns`, `rounds`, etc.) but you will also
-have to provide a data file that would hold the correct hash for that
-combination of parameters. See `tests/resources` for file format.
+(output length, `blocks`, `columns`, `half-rounds`, etc.) but you will
+also have to provide a data file that would hold the correct hash for
+that combination of parameters. See `tests/resources` for file format.
 
 The resulting hash is byte-level compatible with the [original C
 implementation][1]. It means that if you match the build- and runtime
