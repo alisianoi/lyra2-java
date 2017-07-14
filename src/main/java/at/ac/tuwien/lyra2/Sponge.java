@@ -12,7 +12,8 @@ public abstract class Sponge {
 
     public final int N_COLS;
 
-    public final int ROUNDS;
+    public final int FULL_ROUNDS;
+    public final int HALF_ROUNDS;
 
     public final int BLOCK_LEN_INT64;
     public final int BLOCK_LEN_BYTES;
@@ -31,7 +32,8 @@ public abstract class Sponge {
         }
 
         this.N_COLS = params.N_COLS;
-        this.ROUNDS = params.ROUNDS;
+        this.FULL_ROUNDS = params.FULL_ROUNDS;
+        this.HALF_ROUNDS = params.HALF_ROUNDS;
         this.BLOCK_LEN_INT64 = params.BLOCK_LEN_INT64;
         this.BLOCK_LEN_BYTES = params.BLOCK_LEN_BYTES;
     }
@@ -148,10 +150,10 @@ public abstract class Sponge {
     }
 
     /**
-     * Update the state of the sponge, 12 rounds is a "full" update.
+     * Update the state of the sponge, run the full amount of rounds by default.
      */
     public void sponge_lyra() {
-        sponge_lyra(12);
+        sponge_lyra(FULL_ROUNDS);
     }
 
     public void reduced_squeeze_row0(long[] dst, final int offset) {
@@ -164,7 +166,7 @@ public abstract class Sponge {
 
             word -= BLOCK_LEN_INT64;
 
-            sponge_lyra(ROUNDS);
+            sponge_lyra(HALF_ROUNDS);
         }
     }
 
@@ -177,7 +179,7 @@ public abstract class Sponge {
                 state[j] ^= dst[offset1 + word1 + j];
             }
 
-            sponge_lyra(ROUNDS);
+            sponge_lyra(HALF_ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 dst[offset2 + word2 + j] = dst[offset1 + word1 + j] ^ state[j];
@@ -214,7 +216,7 @@ public abstract class Sponge {
                 );
             }
 
-            sponge_lyra(ROUNDS);
+            sponge_lyra(HALF_ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 dst[word3 + j] = dst[word1 + j] ^ state[j];
@@ -261,7 +263,7 @@ public abstract class Sponge {
                 );
             }
 
-            sponge_lyra(ROUNDS);
+            sponge_lyra(HALF_ROUNDS);
 
             for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
                 dst[word0 + j] ^= state[j];

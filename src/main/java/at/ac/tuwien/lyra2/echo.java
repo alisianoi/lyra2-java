@@ -73,7 +73,9 @@ public class echo {
         System.out.println("klen: " + params.klen);
         System.out.println("tcost: " + params.t_cost);
         System.out.println("mcost: " + params.m_cost);
-        System.out.println("ROUNDS: " + params.ROUNDS);
+        System.out.println("sponge: " + params.SPONGE);
+        System.out.println("FULL_ROUNDS: " + params.FULL_ROUNDS);
+        System.out.println("HALF_ROUNDS: " + params.HALF_ROUNDS);
         System.out.println("N_COLS: " + params.N_COLS);
         System.out.println("BLOCKS: " + params.BLOCK_LEN_INT64);
     }

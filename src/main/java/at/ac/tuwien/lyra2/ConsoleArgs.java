@@ -38,6 +38,9 @@ public class ConsoleArgs {
     @Option(names={"--sponge"}, description="the sponge to use")
     public String SPONGE = "blake2b";
 
-    @Option(names={"--rounds"}, description="the number of sponge rounds in reduced operations")
-    public int ROUNDS = 1;
+    @Option(names={"--full-rounds"}, description="the full number of sponge rounds")
+    public int FULL_ROUNDS = 12;
+
+    @Option(names={"--half-rounds"}, description="the reduced number of sponge rounds")
+    public int HALF_ROUNDS = 12;
 }

@@ -22,7 +22,9 @@ public class Main {
 
         LyraParams params = new LyraParams(
                 args.klen, args.t_cost, args.m_cost,
-                args.N_COLS, args.SPONGE, args.ROUNDS, args.BLOCK_LEN_INT64
+                args.N_COLS, args.SPONGE,
+                args.FULL_ROUNDS, args.HALF_ROUNDS,
+                args.BLOCK_LEN_INT64
         );
 
         byte[] hash = new byte[args.klen];

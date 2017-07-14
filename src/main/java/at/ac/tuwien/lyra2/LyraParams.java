@@ -10,7 +10,8 @@ public class LyraParams {
 
     public final String SPONGE;
 
-    public final int ROUNDS;
+    public final int FULL_ROUNDS;
+    public final int HALF_ROUNDS;
 
     public final int BLOCK_LEN_INT64;
     public final int BLOCK_LEN_BYTES;
@@ -26,7 +27,8 @@ public class LyraParams {
 
     public LyraParams(
             int klen, int t_cost, int m_cost,
-            int N_COLS, String SPONGE, int ROUNDS, int BLOCK_LEN_INT64
+            int N_COLS, String SPONGE,
+            int FULL_ROUNDS, int HALF_ROUNDS, int BLOCK_LEN_INT64
     ) {
         this.klen = klen;
 
@@ -36,7 +38,8 @@ public class LyraParams {
         this.N_COLS = N_COLS;
 
         this.SPONGE = SPONGE;
-        this.ROUNDS = ROUNDS;
+        this.FULL_ROUNDS = FULL_ROUNDS;
+        this.HALF_ROUNDS = HALF_ROUNDS;
 
         this.BLOCK_LEN_INT64 =     BLOCK_LEN_INT64;
         this.BLOCK_LEN_BYTES = 8 * BLOCK_LEN_INT64;

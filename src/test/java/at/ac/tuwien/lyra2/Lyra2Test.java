@@ -58,9 +58,28 @@ public class Lyra2Test {
 
     @Test
     public void simpleTest() {
+        // TODO: adjust data format to contain both full and half rounds
+        final int FULL_ROUNDS, HALF_ROUNDS;
+        if (entry.sponge.equals("blake2b")) {
+            FULL_ROUNDS = 12;
+            HALF_ROUNDS = entry.rounds;
+        } else if (entry.sponge.equals("blamka")) {
+            FULL_ROUNDS = 12;
+            HALF_ROUNDS = entry.rounds;
+        } else if (entry.sponge.equals("half-round-blamka")) {
+            FULL_ROUNDS = 24;
+            HALF_ROUNDS = entry.rounds;
+        } else {
+            System.err.println("Could not recognize sponge: " + entry.sponge);
+
+            return;
+        }
+
         LyraParams params = new LyraParams(
                 entry.klen, entry.tcost, entry.mcost,
-                entry.columns, entry.sponge, entry.rounds, entry.blocks
+                entry.columns, entry.sponge,
+                FULL_ROUNDS, HALF_ROUNDS,
+                entry.blocks
         );
 
         byte[] hash = new byte[entry.klen];
