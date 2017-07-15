@@ -1,4 +1,4 @@
-package at.ac.tuwien.lyra2;
+package io.github.all3fox.lyra2;
 
 /**
  * Store various {@link Lyra2} related parameters in one place.

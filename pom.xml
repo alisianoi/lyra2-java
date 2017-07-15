@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>at.ac.tuwien.lyra2</groupId>
+    <groupId>io.github.all3fox</groupId>
     <artifactId>lyra2</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -34,7 +34,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>at.ac.tuwien.lyra2.Main</mainClass>
+                            <mainClass>io.github.all3fox.lyra2.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -68,9 +68,9 @@
                 <configuration>
                     <excludes>
                         <exclude>picocli/CommandLine*</exclude>
-                        <exclude>at/ac/tuwien/lyra2/ConsoleArgs*</exclude>
-                        <exclude>at/ac/tuwien/lyra2/Main*</exclude>
-                        <exclude>at/ac/tuwien/lyra2/echo*</exclude>
+                        <exclude>io/github/all3fox/lyra2/ConsoleArgs*</exclude>
+                        <exclude>io/github/all3fox/lyra2/Main*</exclude>
+                        <exclude>io/github/all3fox/lyra2/echo*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

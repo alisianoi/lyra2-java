@@ -1,4 +1,4 @@
-package at.ac.tuwien.lyra2;
+package io.github.all3fox.lyra2;
 
 import picocli.CommandLine;
 

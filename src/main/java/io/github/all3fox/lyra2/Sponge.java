@@ -1,4 +1,4 @@
-package at.ac.tuwien.lyra2;
+package io.github.all3fox.lyra2;
 
 /**
  * Represent a sponge and implement common methods: {@code absorb*, squeeze*, duplex*}

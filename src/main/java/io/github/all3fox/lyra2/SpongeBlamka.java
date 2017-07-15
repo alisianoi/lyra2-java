@@ -1,4 +1,4 @@
-package at.ac.tuwien.lyra2;
+package io.github.all3fox.lyra2;
 
 /**
  * A sponge that uses BlaMka as its core transformation.
