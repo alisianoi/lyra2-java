@@ -30,6 +30,7 @@ public class mem {
      * Example: {@code 0xDEADBEEFL} becomes {@code 0xEFBEADDE00000000L}
      *
      * @param x a long to be flipped
+     * @return a long with flipped bytes
      */
     public static long flip(final long x) {
         return    (x & 0x00000000000000FFL)  << 56

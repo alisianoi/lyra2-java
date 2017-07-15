@@ -1,6 +1,12 @@
 package at.ac.tuwien.lyra2;
 
+/**
+ * A sponge that uses BlaMka as its core transformation.
+ */
 public class SpongeBlamka extends Sponge {
+    /**
+     * {@inheritDoc}
+     */
     public SpongeBlamka(LyraParams params) {
         super(params);
     }

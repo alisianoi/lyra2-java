@@ -1,5 +1,8 @@
 package at.ac.tuwien.lyra2;
 
+/**
+ * Represent a sponge and implement common methods: {@code absorb*, squeeze*, duplex*}
+ */
 public abstract class Sponge {
     static final long[] blake2b_IV = {
             0x6a09e667f3bcc908L, 0xbb67ae8584caa73bL,
@@ -18,6 +21,14 @@ public abstract class Sponge {
     public final int BLOCK_LEN_INT64;
     public final int BLOCK_LEN_BYTES;
 
+    /**
+     * Construct the sponge and initialize its state.
+     * <p>
+     * Initialize first half of {@code state} with zeros, second half with
+     * blake2b_IV's. This implies that {@code state} is 16 * 8 = 128 bytes.
+     *
+     * @param params {@link LyraParams}
+     */
     public Sponge(LyraParams params) {
         // initialize the sponge state:
         state = new long[16];
@@ -41,9 +52,9 @@ public abstract class Sponge {
     /**
      * Absorb words into the sponge.
      *
-     * @param src    - a source array of words to absorb
-     * @param len    - a number of words to absorb from {@code src}
-     * @param offset - an index into {@code src} to start from
+     * @param src    a source array of words to absorb
+     * @param len    a number of words to absorb from {@code src}
+     * @param offset an index into {@code src} to start from
      */
     public void absorb(final long[] src, final int len, final int offset) {
         for (int i = 0; i != len; ++i) {
@@ -56,8 +67,8 @@ public abstract class Sponge {
     /**
      * Squeeze bytes from the sponge.
      *
-     * @param dst - a destination array to squeeze bytes into
-     * @param len - a number of bytes to squeeze into {@code dst}
+     * @param dst a destination array to squeeze bytes into
+     * @param len a number of bytes to squeeze into {@code dst}
      */
     public void squeeze(byte[] dst, final int len) {
         final int div = len / BLOCK_LEN_BYTES;
@@ -109,8 +120,8 @@ public abstract class Sponge {
     /**
      * Rotate a word by several bits to the right.
      *
-     * @param word - a word to rotate to the right
-     * @param b    - a number of bits to rotate by
+     * @param word a word to rotate to the right
+     * @param b    a number of bits to rotate by
      * @return a new word, the result of rotation
      */
     public static long rotr64(final long word, final int b) {
@@ -120,8 +131,8 @@ public abstract class Sponge {
     /**
      * Rotate a word by several bits to the left.
      *
-     * @param word - a word to rotate to the left
-     * @param b    - a number of bits to rotate by
+     * @param word a word to rotate to the left
+     * @param b    a number of bits to rotate by
      * @return a new word, the result of rotation
      */
     public static long rotl64(final long word, final int b) {
@@ -134,7 +145,7 @@ public abstract class Sponge {
     /**
      * Update the state of the sponge.
      *
-     * @param rounds - roughly the number of state permutation
+     * @param rounds roughly the number of state permutations
      */
     public void sponge_lyra(final int rounds) {
         for (int round = 0; round != rounds; ++round) {
@@ -192,14 +203,14 @@ public abstract class Sponge {
 
     /**
      * Do a duplexing operation
+     * <p>
+     * All of the offsets point into {@code dst} and denote a start of some *row* of bytes.
      *
-     * All of the offsets are indecies into @param{dst} that denote a start of some *row* of bytes.
-     *
-     * @param dst     -- a matrix that both provides and receives bytes
-     * @param offset0 -- a row that provides bytes and receives bytes too
-     * @param offset1 -- a row that provides bytes (latest initialized row)
-     * @param offset2 -- a row that provides bytes (latest revisited and updated row)
-     * @param offset3 -- a row that receives bytes
+     * @param dst     a matrix that both provides and receives bytes
+     * @param offset0 a row that provides bytes and receives bytes too
+     * @param offset1 a row that provides bytes (latest initialized row)
+     * @param offset2 a row that provides bytes (latest revisited and updated row)
+     * @param offset3 a row that receives bytes
      */
     public void reduced_duplex_row_filling(long dst[], final int offset0, final int offset1, final int offset2, final int offset3) {
         int word0 = offset0;
@@ -235,13 +246,14 @@ public abstract class Sponge {
 
     /**
      * Do a duplexing operation
+     * <p>
+     * All of the offsets point into {@code dst} and denote a start of some *row* of bytes.
      *
-     * All of the offsets are indecies into @param{dst} that denote a start of some *row* of bytes.
-     *
-     * @param offset0 -- a row that provides bytes and receives bytes
-     * @param offset1 -- a row that provides bytes and receives bytes after rotation
-     * @param offset2 -- a row that provides bytes
-     * @param offset3 -- a row that provides bytes
+     * @param dst     a matrix that both provides and receives bytes
+     * @param offset0 a row that provides bytes and receives bytes
+     * @param offset1 a row that provides bytes and receives bytes after rotation
+     * @param offset2 a row that provides bytes
+     * @param offset3 a row that provides bytes
      */
     public void reduced_duplex_row_wandering(long[] dst, final int offset0, final int offset1, final int offset2, final int offset3) {
         int word0 = offset0;

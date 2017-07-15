@@ -1,13 +1,16 @@
 package at.ac.tuwien.lyra2;
 
+/**
+ * The single-threaded version of the Lyra2 password hashing scheme.
+ */
 public class Lyra2 {
     /**
      * Compute password hash using salt and other parameters.
      *
-     * @param hash   - byte array that will contain computed hash
-     * @param pass   - a password that was converted to byte form
-     * @param salt   - a salt (makes precomputing the hash pointless)
-     * @param params - an object that holds t_cost, m_cost, etc.
+     * @param hash   byte array that will contain computed hash
+     * @param pass   a password that was converted to byte form
+     * @param salt   a salt (defeats ahead-of-time hash computation)
+     * @param params an object that holds t_cost, m_cost, etc.
      */
     public static void
     phs(byte[] hash, byte[] pass, byte[] salt, LyraParams params) {
@@ -15,13 +18,14 @@ public class Lyra2 {
         hash(hash, pass, salt, params);
     }
 
+    // TODO: clean up variable names and make individual phases more prominent
     /**
      * Compute password hash using salt and other parameters.
      *
-     * @param hash   - byte array that will contain computed hash
-     * @param pass   - a password that was converted to byte form
-     * @param salt   - a salt (makes precomputing the hash pointless)
-     * @param params - an object that holds t_cost, m_cost, etc.
+     * @param hash   byte array that will contain computed hash
+     * @param pass   a password that was converted to byte form
+     * @param salt   a salt (defeats ahead-of-time hash computation)
+     * @param params an object that holds t_cost, m_cost, etc.
      */
     public static void
     hash(byte[] hash, byte[] pass, byte[] salt, LyraParams params) {

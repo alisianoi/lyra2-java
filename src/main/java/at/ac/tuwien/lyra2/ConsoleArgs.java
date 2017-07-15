@@ -4,10 +4,12 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
+/**
+ * Define console arguments and provide help/usage messages.
+ */
 @Command(
         name="Lyra2",
         description="Hash your password with adjustable time and memory costs",
-        footer="Java version by Aleksandr Lisianoi",
         showDefaultValues = true
 )
 public class ConsoleArgs {

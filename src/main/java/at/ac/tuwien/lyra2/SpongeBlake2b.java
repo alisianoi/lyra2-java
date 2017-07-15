@@ -1,6 +1,12 @@
 package at.ac.tuwien.lyra2;
 
+/**
+ * A sponge that uses Blake2b as its core transformation.
+ */
 public class SpongeBlake2b extends Sponge {
+    /**
+     * {@inheritDoc}
+     */
     public SpongeBlake2b(LyraParams params) {
         super(params);
     }

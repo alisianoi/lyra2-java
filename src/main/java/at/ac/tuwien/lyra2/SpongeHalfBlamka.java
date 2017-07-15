@@ -1,6 +1,12 @@
 package at.ac.tuwien.lyra2;
 
+/**
+ * A sponge that uses Half-round BlaMka as its core transformation.
+ */
 public class SpongeHalfBlamka extends SpongeBlamka {
+    /**
+     * {@inheritDoc}
+     */
     public SpongeHalfBlamka(LyraParams params) {
         super(params);
     }

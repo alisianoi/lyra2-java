@@ -2,6 +2,12 @@ package at.ac.tuwien.lyra2;
 
 import picocli.CommandLine;
 
+/**
+ * Entry point for the console script.
+ *
+ * Build a {@link LyraParams} instance from console arguments, compute the hash,
+ * and output the results back to console.
+ */
 public class Main {
     public static void main(String[] argv) {
         ConsoleArgs args = CommandLine.populateCommand(new ConsoleArgs(), argv);
