@@ -1,4 +1,4 @@
-package io.github.all3fox.lyra2;
+package com.github.all3fox.lyra2;
 
 /**
  * Echo bytes to System.out as hexadecimal values.
@@ -55,7 +55,7 @@ public class echo {
      * @param s     skip s bytes ahead
      */
     public static void bytes(long[] longs, int n, int m, int s) {
-        echo.bytes(pack.bytes(longs), n, m, s);
+        bytes(pack.bytes(longs), n, m, s);
     }
 
     /**

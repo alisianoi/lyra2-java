@@ -1,4 +1,4 @@
-package io.github.all3fox.lyra2;
+package com.github.all3fox.lyra2;
 
 /**
  * A sponge that uses Half-round BlaMka as its core transformation.

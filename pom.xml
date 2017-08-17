@@ -59,7 +59,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>io.github.all3fox.lyra2.Main</mainClass>
+                            <mainClass>com.github.all3fox.lyra2.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

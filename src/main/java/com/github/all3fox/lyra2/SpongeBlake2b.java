@@ -1,4 +1,4 @@
-package io.github.all3fox.lyra2;
+package com.github.all3fox.lyra2;
 
 /**
  * A sponge that uses Blake2b as its core transformation.

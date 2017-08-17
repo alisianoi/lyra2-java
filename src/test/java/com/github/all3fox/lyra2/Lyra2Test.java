@@ -1,4 +1,4 @@
-package io.github.all3fox.lyra2;
+package com.github.all3fox.lyra2;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

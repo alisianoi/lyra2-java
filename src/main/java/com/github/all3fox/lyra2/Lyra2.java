@@ -1,4 +1,4 @@
-package io.github.all3fox.lyra2;
+package com.github.all3fox.lyra2;
 
 /**
  * The single-threaded version of the Lyra2 password hashing scheme.
