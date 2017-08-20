@@ -12,11 +12,13 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertArrayEquals;
 
 @RunWith(Parameterized.class)
 public class Lyra2Test {
+    private static Logger logger = Logger.getLogger("Lyra2Test");
     @Parameterized.Parameters
     public static Collection<Object[]> setupClass() {
         Constructor constructor = new Constructor(DataEntry.class);
@@ -111,6 +113,8 @@ public class Lyra2Test {
                 ;
 
         assertArrayEquals(message, correct_hash, hash);
+
+        logger.info(message + " ok");
     }
 }
 
