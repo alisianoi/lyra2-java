@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 
 @RunWith(Parameterized.class)
 public class Lyra2Test {
@@ -100,9 +100,17 @@ public class Lyra2Test {
 
         byte[] correct_hash = pack.bytes(entry.hash);
 
-        for (int i = 0; i != entry.klen; ++i) {
-            assertEquals(correct_hash[i], hash[i]);
-        }
+        String message = "columns-"
+                + entry.columns
+                + "-sponge-"
+                + entry.sponge
+                + "-rounds-"
+                + entry.rounds
+                + "-blocks-"
+                + entry.blocks
+                ;
+
+        assertArrayEquals(message, correct_hash, hash);
     }
 }
 
