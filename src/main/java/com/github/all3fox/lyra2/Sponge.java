@@ -260,8 +260,8 @@ public abstract class Sponge {
         int word1 = offset1;
 
         for (int i = 0; i != N_COLS; ++i) {
-            final int rndcol0 = Math.floorMod((int) mem.flip(state[4]), N_COLS) * BLOCK_LEN_INT64;
-            final int rndcol1 = Math.floorMod((int) mem.flip(state[6]), N_COLS) * BLOCK_LEN_INT64;
+            final int rndcol0 = (int) Long.remainderUnsigned(mem.flip(state[4]), N_COLS) * BLOCK_LEN_INT64;
+            final int rndcol1 = (int) Long.remainderUnsigned(mem.flip(state[6]), N_COLS) * BLOCK_LEN_INT64;
 
             final int word2 = offset2 + rndcol0;
             final int word3 = offset3 + rndcol1;
