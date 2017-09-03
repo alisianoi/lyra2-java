@@ -29,18 +29,18 @@ public class Lyra2Test {
         Yaml yaml = new Yaml(constructor);
 
         String[] fnames = new String[] {
-                  "data-50-columns-256-sponge-blake2b-rounds-12-blocks-12.yml"
-                , "data-50-columns-256-sponge-blake2b-rounds-12-blocks-8.yml"
-                , "data-50-columns-256-sponge-blake2b-rounds-1-blocks-12.yml"
-                , "data-50-columns-256-sponge-blake2b-rounds-1-blocks-8.yml"
-                , "data-50-columns-96-sponge-blamka-rounds-12-blocks-12.yml"
-                , "data-50-columns-96-sponge-blamka-rounds-12-blocks-8.yml"
-                , "data-50-columns-96-sponge-blamka-rounds-1-blocks-12.yml"
-                , "data-50-columns-96-sponge-blamka-rounds-1-blocks-8.yml"
-                , "data-50-columns-512-sponge-half-round-blamka-rounds-12-blocks-12.yml"
-                , "data-50-columns-512-sponge-half-round-blamka-rounds-12-blocks-8.yml"
-                , "data-50-columns-512-sponge-half-round-blamka-rounds-1-blocks-12.yml"
-                , "data-50-columns-512-sponge-half-round-blamka-rounds-1-blocks-8.yml"
+//                  "data-50-columns-256-sponge-blake2b-rounds-12-blocks-12.yml"
+//                , "data-50-columns-256-sponge-blake2b-rounds-12-blocks-8.yml"
+//                , "data-50-columns-256-sponge-blake2b-rounds-1-blocks-12.yml"
+//                , "data-50-columns-256-sponge-blake2b-rounds-1-blocks-8.yml"
+//                , "data-50-columns-96-sponge-blamka-rounds-12-blocks-12.yml"
+//                , "data-50-columns-96-sponge-blamka-rounds-12-blocks-8.yml"
+//                , "data-50-columns-96-sponge-blamka-rounds-1-blocks-12.yml"
+                "data-50-columns-96-sponge-blamka-rounds-1-blocks-8.yml"
+//                , "data-50-columns-512-sponge-half-round-blamka-rounds-12-blocks-12.yml"
+//                , "data-50-columns-512-sponge-half-round-blamka-rounds-12-blocks-8.yml"
+//                , "data-50-columns-512-sponge-half-round-blamka-rounds-1-blocks-12.yml"
+//                , "data-50-columns-512-sponge-half-round-blamka-rounds-1-blocks-8.yml"
         };
 
         List<Object[]> entries = new ArrayList<>();
