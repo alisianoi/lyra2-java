@@ -171,9 +171,7 @@ public abstract class Sponge {
         int word = (N_COLS - 1) * BLOCK_LEN_INT64;
 
         for (int i = 0; i != N_COLS; ++i) {
-            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                dst[offset + word + j] = state[j];
-            }
+            System.arraycopy(state, 0, dst, offset + word, BLOCK_LEN_INT64);
 
             word -= BLOCK_LEN_INT64;
 
@@ -233,9 +231,11 @@ public abstract class Sponge {
                 dst[word3 + j] = dst[word1 + j] ^ state[j];
             }
 
-            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                dst[word0 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];
+            for (int j = 0; j != BLOCK_LEN_INT64 - 2; ++j) {
+                dst[word0 + j] ^= state[j + 2];
             }
+            dst[word0 + BLOCK_LEN_INT64 - 2] ^= state[0];
+            dst[word0 + BLOCK_LEN_INT64 - 1] ^= state[1];
 
             word0 += BLOCK_LEN_INT64;
             word1 += BLOCK_LEN_INT64;
@@ -281,9 +281,11 @@ public abstract class Sponge {
                 dst[word0 + j] ^= state[j];
             }
 
-            for (int j = 0; j != BLOCK_LEN_INT64; ++j) {
-                dst[word1 + j] ^= state[(j + 2) % BLOCK_LEN_INT64];
+            for (int j = 0; j != BLOCK_LEN_INT64 - 2; ++j) {
+                dst[word1 + j] ^= state[j + 2];
             }
+            dst[word1 + BLOCK_LEN_INT64 - 2] ^= state[0];
+            dst[word1 + BLOCK_LEN_INT64 - 1] ^= state[1];
 
             word0 += BLOCK_LEN_INT64;
             word1 += BLOCK_LEN_INT64;

@@ -95,6 +95,7 @@ public class Lyra2 {
 
         final long[] buffer1 = pack.longs(buffer0);
 
+        // TODO: matrix might not be big enough to store password + salt + params
         for (int jj = 0; jj != buffer1.length; ++jj) {
             matrix[jj] = buffer1[jj];
         }
