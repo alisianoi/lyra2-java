@@ -2,7 +2,8 @@
 
 [![Travis](https://img.shields.io/travis/all3fox/lyra2-java.svg?style=flat-square)](https://travis-ci.org/all3fox/lyra2-java)
 [![Coveralls](https://img.shields.io/coveralls/all3fox/lyra2-java.svg?style=flat-square)](https://coveralls.io/github/all3fox/lyra2-java)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.all3fox/lyra2.svg?style=flat-square)](http://search.maven.org/#artifactdetails|com.github.all3fox|lyra2|1.2|lyra2)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.all3fox/lyra2.svg?style=flat-square)](http://search.maven.org/#artifactdetails|com.github.all3fox|lyra2|1.3|lyra2)
+[![Javadocs](https://www.javadoc.io/badge/com.github.all3fox/lyra2.svg?color=blue)](https://www.javadoc.io/doc/com.github.all3fox/lyra2)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/all3fox/lyra2-java/master/LICENSE)
 
 > Lyra2 is a password hashing scheme (PHS) based on cryptographic
